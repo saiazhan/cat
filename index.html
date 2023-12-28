@@ -1,850 +1,1960 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Тест</title>
-    <style>
-        #quiz-container {
-            max-width: 600px;
-            margin: 0 auto;
-        }
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Тест</title>
+		<style>
+			#quiz-container {
+				max-width: 600px;
+				margin: 0 auto;
+			}
 
-        .correct {
-            color: green;
-            font-weight: bold;
-        }
+			.correct {
+				color: green;
+				font-weight: bold;
+			}
 
-        .incorrect {
-            color: red;
-            font-weight: bold;
-        }
-		button {
-            background-color: #4caf50;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-		#pressAllButtons {
-			margin: 0 auto;
-			display: block;
+			.incorrect {
+				color: red;
+				font-weight: bold;
+			}
+			button {
+				background-color: #4caf50;
+				color: #fff;
+				padding: 10px 15px;
+				border: none;
+				border-radius: 5px;
+				cursor: pointer;
+			}
+			#pressAllButtons {
+				margin: 0 auto;
+				display: block;
+			}
+			button:hover {
+				background-color: #45a049;
+			}
+		</style>
+	</head>
+	<body>
+
+	<div id="quiz-container"></div>
+	<div id="results"></div>
+	<button id="pressAllButtons">Проверить</button>
+	<button id ="but" style="display: none;">but</button>
+
+	<script>
+		let globalScore = 3;
+		function shuffleArray(array) {
+			for (let i = array.length - 1; i > 0; i--) {
+				const j = Math.floor(Math.random() * (i + 1));
+				[array[i], array[j]] = [array[j], array[i]];
+			}
 		}
-        button:hover {
-            background-color: #45a049;
-        }
-    </style>
-</head>
-<body>
 
-<div id="quiz-container"></div>
-<div id="results"></div>
-<button id="pressAllButtons">Проверить</button>
-<button id ="but" style="display: none;">but</button>
 
-<script>
-	let globalScore = 3;
-    // Функция для перемешивания массива
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
+		const xmlString = `
+				<questions>
+					<question>
+						<text> Сатушылар тауарлар мен қызметтерді ұсынатын және тұтынушылар оларды сатып алатын белгілі бір экономикалық кеңістікті білдіреді. </text>
+						<options>
+							<variant>маркетингтік зерттеулер</variant>
+							<variant>фьючерстік нарық</variant>
+							<variant>Сауда және өткізу нарығы</variant>
+							<variant>тауар нарығы</variant>
+							<variant>дүниежүзілік нарық</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
 
-    // Ваш XML-файл с вопросами
-    const xmlString = `
-		<questions>
-			<question>
-				<text>Сатушылар тауарлар мен қызметтерді ұсынатын және тұтынушылар оларды сатып алатын белгілі бір экономикалық кеңістікті білдіреді. </text>
-				<options>
-					<variant>маркетингтік зерттеулер</variant>
-					<variant>фьючерстік нарық</variant>
-					<variant>Сауда және өткізу нарығы</variant>
-					<variant>тауар нарығы</variant>
-					<variant>дүниежүзілік нарық</variant>
-				</options>
-				<correctAnswer>3</correctAnswer>
-			</question>
+					<question>
+						<text>Өткізу нарығы, әдетте, белгілі бір мерзімде қалыптасады және дамиды…</text>
+						<options>
+							<variant>сату аймағы</variant>
+							<variant>сегмент</variant>
+							<variant>Тауар нарығы</variant>
+							<variant>шектеулі адамдар шеңбері</variant>
+							<variant>дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>2</correctAnswer>
+					</question>
 
-			<question>
-				<text>Өткізу нарығы, әдетте, белгілі бір мерзімде қалыптасады және дамиды…</text>
-				<options>
+					<question>
+						<text>Нарықты талдау мыналарды қамтиды:</text>
+						<options>
+							<variant>нарықтың және оның мақсатты сегменттерінің жалпы сипаттамасы, нарық сыйымдылығы мен үлесін бағалау, өткізу көлемдерін болжау, бәсекелестерді бағалау</variant>
+							<variant>нарықтың және оның мақсатты сегменттерінің, бәсекелестерінің жалпы сипаттамасы</variant>
+							<variant>нарық сыйымдылығы мен үлесін бағалау, SWOT талдауын құрастыру</variant>
+							<variant>бәсекелестерді бағалау, сату көлемін болжау</variant>
+							<variant>дүниежүзілік нарықты сегменттеу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+
+					<question>
+						<text>Өнім түріне және оған сұранысты анықтайтын қажеттілік сипатына байланысты өткізу нарығы келесідей бола алмайды: </text>
+						<options>
+							<variant>ғаламдық</variant>
+							<variant>Тұтынушы</variant>
+							<variant>Кәсіпорындар</variant>
+							<variant>Мемлекеттік органдар</variant>
+							<variant>Аралық сатушылар</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+
+					<question>
+						<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі</text>
+						<options>
+							
+							<variant>нарық сегменті</variant>
+							<variant>нарықтағы бәсекелестер</variant>
+							<variant>нарықтық контрагенттер</variant>
+							<variant>Мемлекеттік органдар</variant>
+							<variant>нарық сыйымдылығы</variant>
+						</options>
+						<correctAnswer>4</correctAnswer>
+					</question>
+						 
+					<question>
+						<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі.</text>
+						<options>
+							<variant>нарықтағы бәсекелестер</variant>
+							<variant>нарық сегменті</variant>
+							<variant>нарық сыйымдылығы</variant>
+							<variant>нарықтық контрагенттер</variant>
+							<variant>Мемлекеттік органдар</variant>
+						</options>
+						<correctAnswer>2</correctAnswer>
+					</question>
+					<question>
+						<text>Өткізу нарығының сыйымдылығы осы көрсеткішке байланысты және өзгермелі шама болып табылады:</text>
+						<options>
+							<variant>мемлекеттік саясат</variant>
+							<variant>Жергілікті заңдар мен ережелер</variant>
+							<variant>нарықтық жағдай </variant>
+							<variant>Cұраныс пен ұсыныс</variant>
+							<variant>Экономикалық өсу</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+			 
+					<question>
+						<text>Нарық жағдайы жақсарса, яғни сұраныс өссе не болады</text>
+						<options>
+							<variant>Салық ставкалары өсуде</variant>
+							<variant>Жергілікті заңдар мен ережелер</variant>
+							<variant>несиелердің көлемі қысқарады</variant>
+							<variant>нарық сыйымдылығы артады</variant>
+							<variant>нарық сыйымдылығы төмендейді</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+			 
+					<question>
+						<text>Нарық конъюнктурасы төмендегенде, яғни сұраныс төмендегенде не болады,</text>
+						<options>
+							<variant>Халықтың әл-ауқатының өсуі</variant>
+							<variant>Нақты нарық сыйымдылығы артады</variant>
+							<variant>Нақты нарық сыйымдылығы төмендеу</variant>
+							<variant>Салық ставкалары өсуде</variant>
+							<variant>Несие көлемі қысқарады</variant>
+						</options>
+						<correctAnswer>2</correctAnswer>
+					</question>
+					<question>
+						<text>маркетингтік шешімдер қабылдаумен байланысты белгісіздікті азайту мақсатында деректерді жүйелі және объективті анықтау, жинау, өңдеу, талдау және түсіндіру</text>
+						<options>			
+							<variant>Тиімділікті есептеу</variant>
+							<variant>Бизнес-жоспарлау</variant>
+							<variant>Нарық зерттеу</variant>
+							<variant>Нарық сыйымдылығын есептеу</variant>
+							<variant>Баға саясаты</variant>
+						</options>
+						<correctAnswer>2</correctAnswer>
+					</question>
+					<question>
+						<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
+						<options>			
+							<variant>Объективтілік</variant>
+							<variant>Мәліметтерді жинау</variant>
+							<variant>Уақтылылық</variant>
+							<variant>Жүйелі</variant>
+							<variant>Реттілік</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					 
+					<question>
+						<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
+						<options>			
+							<variant>Объективтілік</variant>
+							<variant>Мәліметтерді жинау</variant>
+							<variant>Уақтылылық</variant>
+							<variant>Жүйелі</variant>
+							<variant>Реттілік</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					 
+					<question>
+						<text>істің шынайы жағдайын көрсететін неғұрлым нақты ақпарат беру, зерттеушінің бейтараптығы маркетингтік зерттеулердің принципі болып табылады:</text>
+						<options>			
+							<variant>Жүйелі</variant>
+							<variant>Уақтылылық</variant>
+							<variant>Реттілік</variant>
+							<variant>Мәліметтерді жинау</variant>
+							<variant>Объективтілік</variant>
+						</options>
+						<correctAnswer>4</correctAnswer>
+					</question>
+					<question>
+						<text>52. бұрыннан белгілі кәсіпорынның сауда маркасы мен технологиясын пайдалану</text>
+						<options>
+							<variant>А) Франчайзинг</variant>
+							<variant>А) франко</variant>
+							<variant>А) факторинг</variant>
+							<variant>А) форфейтинг</variant>
+							<variant>А) форвардтық мәмілелер</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>53. »Идеяның пайда болу» түрлерінің біріне не кірмейді </text>
+						<options>
+							<variant>А) Мемлекеттік бұйрық</variant>
+							<variant>А) «стиринг» идеясы</variant>
+							<variant>А) армандар</variant>
+							<variant>А) жеке таланттар</variant>
+							<variant>А) нарық мәселелері</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>54. «Кірпі тұжырымдамасы» әдісін қолдану арқылы бизнес-идея құру</text>
+						<options>
+							<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
+							<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
+							<variant>А) проблемаларды шешу ағашын құру</variant>
+							<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
+							<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
 					
-					<variant>сату аймағы</variant>
-					<variant>сегмент</variant>
-					<variant>Тауар нарығы</variant>
-					<variant>шектеулі адамдар шеңбері</variant>
-					<variant>дұрыс жауап жоқ</variant>
-				</options>
-				<correctAnswer>2</correctAnswer>
-			</question>
-
-			<question>
-				<text>Нарықты талдау мыналарды қамтиды:</text>
-				<options>
-					<variant>нарықтың және оның мақсатты сегменттерінің жалпы сипаттамасы, нарық сыйымдылығы мен үлесін бағалау, өткізу көлемдерін болжау, бәсекелестерді бағалау</variant>
-					<variant>нарықтың және оның мақсатты сегменттерінің, бәсекелестерінің жалпы сипаттамасы</variant>
-					<variant>нарық сыйымдылығы мен үлесін бағалау, SWOT талдауын құрастыру</variant>
-					<variant>бәсекелестерді бағалау, сату көлемін болжау</variant>
-					<variant>дүниежүзілік нарықты сегменттеу</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-
-			<question>
-				<text>Өнім түріне және оған сұранысты анықтайтын қажеттілік сипатына байланысты өткізу нарығы келесідей бола алмайды: </text>
-				<options>
-					<variant>ғаламдық</variant>
-					<variant>Тұтынушы</variant>
-					<variant>Кәсіпорындар</variant>
-					<variant>Мемлекеттік органдар</variant>
-					<variant>Аралық сатушылар</variant>
-				</options>
-				<correctAnswer>1</correctAnswer>
-			</question>
-
-			<question>
-				<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі</text>
-				<options>
+					<question>
+						<text>55. Стартап(StаrtUp)құру арқылы бизнес идеяны қалыптастыру</text>
+						<options>
+							<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
+							<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
+							<variant>А) проблемаларды шешу ағашын құру</variant>
+							<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
+							<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>56. «Исикава диаграммасы» бизнес идеясын қалыптастыру әдісінің мәні</text>
+						<options>
+							<variant>А) проблемаларды шешу ағашын құру</variant>
+							<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
+							<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
+							<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
+							<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>57. Идеяларды көшіру арқылы бизнес-идеяларды қалыптастыру</text>
+						<options>
+							<variant>А) бәсекелестеріңіздің жақсы идеяларын көшіру</variant>
+							<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
+							<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
+							<variant>А) проблемаларды шешу ағашын құру</variant>
+							<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>58. FAN әдісі бизнес-идеяның өміршеңдігін тексереді …</text>
+						<options>
+							<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
+							<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
+							<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
+							<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
+							<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
 					
-					<variant>нарық сегменті</variant>
-					<variant>нарықтағы бәсекелестер</variant>
-					<variant>нарықтық контрагенттер</variant>
-					<variant>Мемлекеттік органдар</variant>
-					<variant>нарық сыйымдылығы</variant>
-				</options>
-				<correctAnswer>4</correctAnswer>
-			</question>
-			    <!-- Добавьте аналогичные блоки для остальных вопросов -->
-			<question>
-				<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі.</text>
-				<options>
-					<variant>нарықтағы бәсекелестер</variant>
-					<variant>нарық сегменті</variant>
-					<variant>нарық сыйымдылығы</variant>
-					<variant>нарықтық контрагенттер</variant>
-					<variant>Мемлекеттік органдар</variant>
-				</options>
-				<correctAnswer>2</correctAnswer>
-			</question>
-			<question>
-				<text>Өткізу нарығының сыйымдылығы осы көрсеткішке байланысты және өзгермелі шама болып табылады:</text>
-				<options>
-					<variant>мемлекеттік саясат</variant>
-					<variant>Жергілікті заңдар мен ережелер</variant>
-					<variant>нарықтық жағдай </variant>
-					<variant>Cұраныс пен ұсыныс</variant>
-					<variant>Экономикалық өсу</variant>
-				</options>
-				<correctAnswer>3</correctAnswer>
-			</question>
-    <!-- Добавьте аналогичные блоки для остальных вопросов -->
-			<question>
-				<text>Нарық жағдайы жақсарса, яғни сұраныс өссе не болады</text>
-				<options>
-					<variant>Салық ставкалары өсуде</variant>
-					<variant>Жергілікті заңдар мен ережелер</variant>
-					<variant>несиелердің көлемі қысқарады</variant>
-					<variant>нарық сыйымдылығы артады</variant>
-					<variant>нарық сыйымдылығы төмендейді</variant>
-				</options>
-				<correctAnswer>3</correctAnswer>
-			</question>
-    <!-- Добавьте аналогичные блоки для остальных вопросов -->
-			<question>
-				<text>Нарық конъюнктурасы төмендегенде, яғни сұраныс төмендегенде не болады,</text>
-				<options>
-					<variant>Халықтың әл-ауқатының өсуі</variant>
-					<variant>Нақты нарық сыйымдылығы артады</variant>
-					<variant>Нақты нарық сыйымдылығы төмендеу</variant>
-					<variant>Салық ставкалары өсуде</variant>
-					<variant>Несие көлемі қысқарады</variant>
-				</options>
-				<correctAnswer>2</correctAnswer>
-			</question>
-			<question>
-				<text>маркетингтік шешімдер қабылдаумен байланысты белгісіздікті азайту мақсатында деректерді жүйелі және объективті анықтау, жинау, өңдеу, талдау және түсіндіру</text>
-				<options>			
-					<variant>Тиімділікті есептеу</variant>
-					<variant>Бизнес-жоспарлау</variant>
-					<variant>Нарық зерттеу</variant>
-					<variant>Нарық сыйымдылығын есептеу</variant>
-					<variant>Баға саясаты</variant>
-				</options>
-				<correctAnswer>2</correctAnswer>
-			</question>
-			<question>
-				<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
-				<options>			
-					<variant>Объективтілік</variant>
-					<variant>Мәліметтерді жинау</variant>
-					<variant>Уақтылылық</variant>
-					<variant>Жүйелі</variant>
-					<variant>Реттілік</variant>
-				</options>
-				<correctAnswer>3</correctAnswer>
-			</question>
-			<!-- delitel -->
-			<question>
-				<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
-				<options>			
-					<variant>Объективтілік</variant>
-					<variant>Мәліметтерді жинау</variant>
-					<variant>Уақтылылық</variant>
-					<variant>Жүйелі</variant>
-					<variant>Реттілік</variant>
-				</options>
-				<correctAnswer>3</correctAnswer>
-			</question>
-			<!-- delitel -->
-			<question>
-				<text>істің шынайы жағдайын көрсететін неғұрлым нақты ақпарат беру, зерттеушінің бейтараптығы маркетингтік зерттеулердің принципі болып табылады:</text>
-				<options>			
-					<variant>Жүйелі</variant>
-					<variant>Уақтылылық</variant>
-					<variant>Реттілік</variant>
-					<variant>Мәліметтерді жинау</variant>
-					<variant>Объективтілік</variant>
-				</options>
-				<correctAnswer>4</correctAnswer>
-			</question>
-			<question>
-				<text>52. бұрыннан белгілі кәсіпорынның сауда маркасы мен технологиясын пайдалану</text>
-				<options>
-					<variant>А) Франчайзинг</variant>
-					<variant>А) франко</variant>
-					<variant>А) факторинг</variant>
-					<variant>А) форфейтинг</variant>
-					<variant>А) форвардтық мәмілелер</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>53. »Идеяның пайда болу» түрлерінің біріне не кірмейді </text>
-				<options>
-					<variant>А) Мемлекеттік бұйрық</variant>
-					<variant>А) «стиринг» идеясы</variant>
-					<variant>А) армандар</variant>
-					<variant>А) жеке таланттар</variant>
-					<variant>А) нарық мәселелері</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>54. «Кірпі тұжырымдамасы» әдісін қолдану арқылы бизнес-идея құру</text>
-				<options>
-					<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
-					<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
-					<variant>А) проблемаларды шешу ағашын құру</variant>
-					<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
-					<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			
-			<question>
-				<text>55. Стартап(StаrtUp)құру арқылы бизнес идеяны қалыптастыру</text>
-				<options>
-					<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
-					<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
-					<variant>А) проблемаларды шешу ағашын құру</variant>
-					<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
-					<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>56. «Исикава диаграммасы» бизнес идеясын қалыптастыру әдісінің мәні</text>
-				<options>
-					<variant>А) проблемаларды шешу ағашын құру</variant>
-					<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
-					<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
-					<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
-					<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
-				</options>
-				<correctAnswer>1</correctAnswer>
-			</question>
-			<question>
-				<text>57. Идеяларды көшіру арқылы бизнес-идеяларды қалыптастыру</text>
-				<options>
-					<variant>А) бәсекелестеріңіздің жақсы идеяларын көшіру</variant>
-					<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
-					<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
-					<variant>А) проблемаларды шешу ағашын құру</variant>
-					<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>58. FAN әдісі бизнес-идеяның өміршеңдігін тексереді …</text>
-				<options>
-					<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
-					<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
-					<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
-					<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
-					<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			<question>
-				<text>59. Tesco әдісі мыналарды қамтиды…</text>
-				<options>
-					<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
-					<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
-					<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
-					<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
-					<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>60. Бизнес идеясын анықтайтын 6 шляпалар әдісі</text>
-				<options>
-					<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
-					<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
-					<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
-					<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
-					<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			<question>
-				<text>68)- B2B (business to business) нарығы мыналарды болжайды:</text>
-				<options>
-					<variant>A) сатушы мен соңғы тұтынушы арасындағы қарым-қатынас.</variant>
-					<variant>A) бөлшек сауда компаниялары, корпоративтік клиенттерге арналған қызметтер</variant>
-					<variant>A) корпоративтік сатушылар мен тұтынушылар – көтерме компаниялар, өнеркәсіптік кәсіпорындар, корпоративтік клиенттерге арналған қызметтер арасында өзара қарым-қатынас орын алады</variant>
-					<variant>A) тауарды немесе қызметті жеке пайдалану үшін сатып алатын тұтынушы</variant>
-					<variant>A) біз «өнімнің қасиеттері»деп айтамыз.</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>69)- Жеке пайдалану үшін тауарды немесе қызметті сатып алатын тұтынушы.</text>
-				<options>
-					<variant>A) соңғы тұтынушы</variant>
-					<variant>A) сатушы</variant>
-					<variant>A) көтерме тұтынушы</variant>
-					<variant>A) бөлшек тұтынушы</variant>
-					<variant>A) делдал</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>70)- Маркетинг кешені-4Р білдіреді</text>
-				<options>
-					<variant>A) өнім, баға, Маркетингтік коммуникациялар, тарату арналары</variant>
-					<variant>A) өнім, несие, менеджмент, тарату арналары</variant>
-					<variant>A) несие, баға, Маркетингтік коммуникациялар, салықтар</variant>
-					<variant>A) баға, жарнама, сату және жылжыту арналары</variant>
-					<variant>A) жарнама, баға, өсу, адамдар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>71)- Бірінші Р-4P маркетингтік стратегиясында</text>
-				<options>
-					<variant>A) өнім</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			<question>
-				<text>72)- Екінші Р-4P маркетингтік стратегиясында</text>
-				<options>
-					<variant>A) бағасы</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>73)- Үшінші Р-4P маркетингтік стратегиясында</text>
-				<options>
-					<variant>A) Маркетингтік коммуникациялар</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>74)- Төртінші Р-4P маркетингтік стратегиясында</text>
-				<options>
-					<variant>A) өткізу арналары</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>75)- тапсырмаларды біртіндеп, кезең-кезеңімен шешуге мүмкіндік беретін белгілі бір қиын нәрселерді кішірек нәрселерге бөлу процесі.</text>
-				<options>
-					<variant>A) сегменттеу</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			
-			<question>
-				<text>75)- тапсырмаларды біртіндеп, кезең-кезеңімен шешуге мүмкіндік беретін белгілі бір қиын нәрселерді кішірек нәрселерге бөлу процесі.</text>
-				<options>
-					<variant>A) сегменттеу</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>76)- сатып алушылардың қалауын сіз ұсына алатын өнім түрлері бойынша топтастыру</text>
-				<options>
-					<variant>A) сегменттеу</variant>
-					<variant>A) нарық</variant>
-					<variant>A) ұсыныс</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			<question>
-				<text>77)- Нарықтағы тауашалар…</text>
-				<options>
-					<variant>A) өнімге сұранысы жоғары және бәсекелестігі төмен нарықтың аз бөлігі.</variant>
-					<variant>A) сатып алушылардың қалауын сіз ұсына алатын өнім түрлері бойынша топтастыру</variant>
-					<variant>A) сіз үшін белгілі бір қиын нәрселерді біртіндеп, біртіндеп шешуге мүмкіндік беретін кішігірім нәрселерге бөлетін процесс.</variant>
-					<variant>A) тауарды немесе қызметті жеке пайдалану үшін сатып алатын тұтынушы.</variant>
-					<variant>A) өз қасиеттерін жоғалтқан тауарлар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>78)- Бұл әлеуметтік желілердегі клиенттер мен сатылымдарға арналған құрал.</text>
-				<options>
-					<variant>A) SMM</variant>
-					<variant>A) »тікелей пошта»</variant>
-					<variant>A) SBB</variant>
-					<variant>A) 4P4</variant>
-					<variant>A) DDS</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>79)- кәсіпорынның мақсаттарына қол жеткізуге бағытталған іс-қимыл жоспарын жүйелі түрде құру</text>
-				<options>
-					<variant>A) Жоспарлау</variant>
-					<variant>A) болжау</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) басқару</variant>
-					<variant>A) бюджеттеу</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>80)- Шаруашылық қызметті 1 айға дейін жоспарлау түрі</text>
-				<options>
-					<variant>A) жедел</variant>
-					<variant>A) ағымдағы</variant>
-					<variant>A) перспективалы</variant>
-					<variant>A) стратегиялық</variant>
-					<variant>A) мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>81)- Түрі шаруашылық қызметті жоспарлау 1 айдан 1 жылға дейін</text>
-				<options>
-					<variant>A) ағымдағы</variant>
-					<variant>A) жедел</variant>
-					<variant>A) перспективалы</variant>
-					<variant>A) стратегиялық</variant>
-					<variant>A) мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			
-			
-			
-			<question>
-				<text>82)-3 жылдан 10 жылға дейінгі шаруашылық қызметті жоспарлау түрі</text>
-				<options>
-					<variant>A) перспективалы</variant>
-					<variant>A) жедел</variant>
-					<variant>A) ағымдағы</variant>
-					<variant>A) бюджеттеу</variant>
-					<variant>A) мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>83)- Бизнестің шаруашылық қызметін жедел жоспарлау мерзімін қамтиды</text>
-				<options>
-					<variant>A) 1 айға дейін</variant>
-					<variant>A) 1 айдан 1 жылға дейін</variant>
-					<variant>A) 3 жастан 10 жасқа дейін</variant>
-					<variant>A) 50 жылдан астам</variant>
-					<variant>A) 100 жылдан астам</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>84)- Бизнестің шаруашылық қызметін ағымдағы жоспарлау мерзімін қамтиды</text>
-				<options>
-					<variant>A) 1 айдан 1 жылға дейін</variant>
-					<variant>A) 1 айға дейін</variant>
-					<variant>A) 3 жастан 10 жасқа дейін</variant>
-					<variant>A) 50 жылдан астам</variant>
-					<variant>A) 100 жылдан астам</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>85.	Кәсіпорынның мақсаттарына қол жеткізуге бағытталған іс-шаралар жоспарын жүйелі түрде құру</text>
-				<options>
-					<variant>A)	Жоспарлау</variant>
-					<variant>A)	болжау</variant>
-					<variant>A)	менеджмент</variant>
-					<variant>A)	басқару</variant>
-					<variant>A)	бюджеттеу</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>86.	Шаруашылық қызметті 1 айға дейін жоспарлау түрі</text>
-				<options>
-					<variant>A)	жедел</variant>
-					<variant>A)	ағымдағы</variant>
-					<variant>A)	перспективалы</variant>
-					<variant>A)	стратегиялық</variant>
-					<variant>A)	мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>87.	Түрі шаруашылық қызметті жоспарлау 1 айдан 1 жылға дейін</text>
-				<options>
-					<variant>A)	ағымдағы</variant>
-					<variant>A)	жедел</variant>
-					<variant>A)	перспективалы</variant>
-					<variant>A)	стратегиялық</variant>
-					<variant>A)	мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>			
-			
-			
-			<question>
-				<text>88. 3 жылдан 10 жылға дейінгі шаруашылық қызметті жоспарлау түрі</text>
-				<options>
-					<variant>A) перспективалы</variant>
-					<variant>A) жедел</variant>
-					<variant>A) ағымдағы</variant>
-					<variant>A) бюджеттеу</variant>
-					<variant>A) мемлекеттік</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>89. Бизнестің шаруашылық қызметін жедел жоспарлау мерзімін қамтиды</text>
-				<options>
-					<variant>A) 1 айға дейін</variant>
-					<variant>A) 1 айдан 1 жылға дейін</variant>
-					<variant>A) 3 жастан 10 жасқа дейін</variant>
-					<variant>A) 50 жылдан астам</variant>
-					<variant>A) 100 жылдан астам</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>90. Бизнестің шаруашылық қызметін ағымдағы жоспарлау мерзімін қамтиды</text>
-				<options>
-					<variant>A) 1 айдан 1 жылға дейін</variant>
-					<variant>A) 1 айға дейін</variant>
-					<variant>A) 3 жастан 10 жасқа дейін</variant>
-					<variant>A) 50 жылдан астам</variant>
-					<variant>A) 100 жылдан астам</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>91. Бизнестің шаруашылық қызметін перспективалық жоспарлау мерзімін қамтиды</text>
-				<options>
-					<variant>A) 3 жастан 10 жасқа дейін</variant>
-					<variant>A) 1 айға дейін</variant>
-					<variant>A) 1 айдан 1 жылға дейін</variant>
-					<variant>A) 50 жылдан астам</variant>
-					<variant>A) 100 жылдан астам</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>92. Бұл кәсіпкерлік қызметтің барлық негізгі аспектілерін сипаттайтын, кәсіпкер тап болуы мүмкін негізгі мәселелерді талдайтын және осы мәселелерді шешудің негізгі жолдарын анықтайтын құжат.</text>
-				<options>
-					<variant>A) Бизнес-жоспар</variant>
-					<variant>A) болжау</variant>
-					<variant>A) менеджмент</variant>
-					<variant>A) басқару</variant>
-					<variant>A) бюджеттеу</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
+					<question>
+						<text>59. Tesco әдісі мыналарды қамтиды…</text>
+						<options>
+							<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
+							<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
+							<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
+							<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
+							<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>60. Бизнес идеясын анықтайтын 6 шляпалар әдісі</text>
+						<options>
+							<variant>А) басшыдан шешім табуға дейін ойлауды ауыстыру</variant>
+							<variant>А) мүмкін, тартымдылық, өзіндік ерекшелік</variant>
+							<variant>А) клиенттің жағдайын жақсарту, қызметкерлердің жұмысын жеңілдету, шығындарды үнемдеу</variant>
+							<variant>А) мақсатты аудиторияға сауалнама жүргізу</variant>
+							<variant>А) бизнес-идеяны қалыптастыру факторларын анықтау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					<question>
+						<text>68)- B2B (business to business) нарығы мыналарды болжайды:</text>
+						<options>
+							<variant>A) сатушы мен соңғы тұтынушы арасындағы қарым-қатынас.</variant>
+							<variant>A) бөлшек сауда компаниялары, корпоративтік клиенттерге арналған қызметтер</variant>
+							<variant>A) корпоративтік сатушылар мен тұтынушылар – көтерме компаниялар, өнеркәсіптік кәсіпорындар, корпоративтік клиенттерге арналған қызметтер арасында өзара қарым-қатынас орын алады</variant>
+							<variant>A) тауарды немесе қызметті жеке пайдалану үшін сатып алатын тұтынушы</variant>
+							<variant>A) біз «өнімнің қасиеттері»деп айтамыз.</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>69)- Жеке пайдалану үшін тауарды немесе қызметті сатып алатын тұтынушы.</text>
+						<options>
+							<variant>A) соңғы тұтынушы</variant>
+							<variant>A) сатушы</variant>
+							<variant>A) көтерме тұтынушы</variant>
+							<variant>A) бөлшек тұтынушы</variant>
+							<variant>A) делдал</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>70)- Маркетинг кешені-4Р білдіреді</text>
+						<options>
+							<variant>A) өнім, баға, Маркетингтік коммуникациялар, тарату арналары</variant>
+							<variant>A) өнім, несие, менеджмент, тарату арналары</variant>
+							<variant>A) несие, баға, Маркетингтік коммуникациялар, салықтар</variant>
+							<variant>A) баға, жарнама, сату және жылжыту арналары</variant>
+							<variant>A) жарнама, баға, өсу, адамдар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>71)- Бірінші Р-4P маркетингтік стратегиясында</text>
+						<options>
+							<variant>A) өнім</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					<question>
+						<text>72)- Екінші Р-4P маркетингтік стратегиясында</text>
+						<options>
+							<variant>A) бағасы</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>73)- Үшінші Р-4P маркетингтік стратегиясында</text>
+						<options>
+							<variant>A) Маркетингтік коммуникациялар</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>74)- Төртінші Р-4P маркетингтік стратегиясында</text>
+						<options>
+							<variant>A) өткізу арналары</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>75)- тапсырмаларды біртіндеп, кезең-кезеңімен шешуге мүмкіндік беретін белгілі бір қиын нәрселерді кішірек нәрселерге бөлу процесі.</text>
+						<options>
+							<variant>A) сегменттеу</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					
+					<question>
+						<text>75)- тапсырмаларды біртіндеп, кезең-кезеңімен шешуге мүмкіндік беретін белгілі бір қиын нәрселерді кішірек нәрселерге бөлу процесі.</text>
+						<options>
+							<variant>A) сегменттеу</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>76)- сатып алушылардың қалауын сіз ұсына алатын өнім түрлері бойынша топтастыру</text>
+						<options>
+							<variant>A) сегменттеу</variant>
+							<variant>A) нарық</variant>
+							<variant>A) ұсыныс</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					<question>
+						<text>77)- Нарықтағы тауашалар…</text>
+						<options>
+							<variant>A) өнімге сұранысы жоғары және бәсекелестігі төмен нарықтың аз бөлігі.</variant>
+							<variant>A) сатып алушылардың қалауын сіз ұсына алатын өнім түрлері бойынша топтастыру</variant>
+							<variant>A) сіз үшін белгілі бір қиын нәрселерді біртіндеп, біртіндеп шешуге мүмкіндік беретін кішігірім нәрселерге бөлетін процесс.</variant>
+							<variant>A) тауарды немесе қызметті жеке пайдалану үшін сатып алатын тұтынушы.</variant>
+							<variant>A) өз қасиеттерін жоғалтқан тауарлар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>78)- Бұл әлеуметтік желілердегі клиенттер мен сатылымдарға арналған құрал.</text>
+						<options>
+							<variant>A) SMM</variant>
+							<variant>A) »тікелей пошта»</variant>
+							<variant>A) SBB</variant>
+							<variant>A) 4P4</variant>
+							<variant>A) DDS</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>79)- кәсіпорынның мақсаттарына қол жеткізуге бағытталған іс-қимыл жоспарын жүйелі түрде құру</text>
+						<options>
+							<variant>A) Жоспарлау</variant>
+							<variant>A) болжау</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) басқару</variant>
+							<variant>A) бюджеттеу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>80)- Шаруашылық қызметті 1 айға дейін жоспарлау түрі</text>
+						<options>
+							<variant>A) жедел</variant>
+							<variant>A) ағымдағы</variant>
+							<variant>A) перспективалы</variant>
+							<variant>A) стратегиялық</variant>
+							<variant>A) мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>81)- Түрі шаруашылық қызметті жоспарлау 1 айдан 1 жылға дейін</text>
+						<options>
+							<variant>A) ағымдағы</variant>
+							<variant>A) жедел</variant>
+							<variant>A) перспективалы</variant>
+							<variant>A) стратегиялық</variant>
+							<variant>A) мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					
+					
+					
+					<question>
+						<text>82)-3 жылдан 10 жылға дейінгі шаруашылық қызметті жоспарлау түрі</text>
+						<options>
+							<variant>A) перспективалы</variant>
+							<variant>A) жедел</variant>
+							<variant>A) ағымдағы</variant>
+							<variant>A) бюджеттеу</variant>
+							<variant>A) мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>83)- Бизнестің шаруашылық қызметін жедел жоспарлау мерзімін қамтиды</text>
+						<options>
+							<variant>A) 1 айға дейін</variant>
+							<variant>A) 1 айдан 1 жылға дейін</variant>
+							<variant>A) 3 жастан 10 жасқа дейін</variant>
+							<variant>A) 50 жылдан астам</variant>
+							<variant>A) 100 жылдан астам</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>84)- Бизнестің шаруашылық қызметін ағымдағы жоспарлау мерзімін қамтиды</text>
+						<options>
+							<variant>A) 1 айдан 1 жылға дейін</variant>
+							<variant>A) 1 айға дейін</variant>
+							<variant>A) 3 жастан 10 жасқа дейін</variant>
+							<variant>A) 50 жылдан астам</variant>
+							<variant>A) 100 жылдан астам</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>85.	Кәсіпорынның мақсаттарына қол жеткізуге бағытталған іс-шаралар жоспарын жүйелі түрде құру</text>
+						<options>
+							<variant>A)	Жоспарлау</variant>
+							<variant>A)	болжау</variant>
+							<variant>A)	менеджмент</variant>
+							<variant>A)	басқару</variant>
+							<variant>A)	бюджеттеу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>86.	Шаруашылық қызметті 1 айға дейін жоспарлау түрі</text>
+						<options>
+							<variant>A)	жедел</variant>
+							<variant>A)	ағымдағы</variant>
+							<variant>A)	перспективалы</variant>
+							<variant>A)	стратегиялық</variant>
+							<variant>A)	мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>87.	Түрі шаруашылық қызметті жоспарлау 1 айдан 1 жылға дейін</text>
+						<options>
+							<variant>A)	ағымдағы</variant>
+							<variant>A)	жедел</variant>
+							<variant>A)	перспективалы</variant>
+							<variant>A)	стратегиялық</variant>
+							<variant>A)	мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					
+					<question>
+						<text>88. 3 жылдан 10 жылға дейінгі шаруашылық қызметті жоспарлау түрі</text>
+						<options>
+							<variant>A) перспективалы</variant>
+							<variant>A) жедел</variant>
+							<variant>A) ағымдағы</variant>
+							<variant>A) бюджеттеу</variant>
+							<variant>A) мемлекеттік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>89. Бизнестің шаруашылық қызметін жедел жоспарлау мерзімін қамтиды</text>
+						<options>
+							<variant>A) 1 айға дейін</variant>
+							<variant>A) 1 айдан 1 жылға дейін</variant>
+							<variant>A) 3 жастан 10 жасқа дейін</variant>
+							<variant>A) 50 жылдан астам</variant>
+							<variant>A) 100 жылдан астам</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>90. Бизнестің шаруашылық қызметін ағымдағы жоспарлау мерзімін қамтиды</text>
+						<options>
+							<variant>A) 1 айдан 1 жылға дейін</variant>
+							<variant>A) 1 айға дейін</variant>
+							<variant>A) 3 жастан 10 жасқа дейін</variant>
+							<variant>A) 50 жылдан астам</variant>
+							<variant>A) 100 жылдан астам</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>91. Бизнестің шаруашылық қызметін перспективалық жоспарлау мерзімін қамтиды</text>
+						<options>
+							<variant>A) 3 жастан 10 жасқа дейін</variant>
+							<variant>A) 1 айға дейін</variant>
+							<variant>A) 1 айдан 1 жылға дейін</variant>
+							<variant>A) 50 жылдан астам</variant>
+							<variant>A) 100 жылдан астам</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>92. Бұл кәсіпкерлік қызметтің барлық негізгі аспектілерін сипаттайтын, кәсіпкер тап болуы мүмкін негізгі мәселелерді талдайтын және осы мәселелерді шешудің негізгі жолдарын анықтайтын құжат.</text>
+						<options>
+							<variant>A) Бизнес-жоспар</variant>
+							<variant>A) болжау</variant>
+							<variant>A) менеджмент</variant>
+							<variant>A) басқару</variant>
+							<variant>A) бюджеттеу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
 
-			<question>
-				<text>93. Бизнес-жоспардың ішкі пайдаланушылары</text>
-				<options>
-					<variant>A) бизнес құрылтайшылары</variant>
-					<variant>A) әлеуетті инвесторлар</variant>
-					<variant>A) несие берушілер</variant>
-					<variant>A) бизнес серіктестері</variant>
-					<variant>A) мемлекет</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>94. Бизнес-жоспардың сыртқы пайдаланушылары</text>
-				<options>
-					<variant>A) әлеуетті инвесторлар</variant>
-					<variant>A) бизнес құрылтайшылары</variant>
-					<variant>A) персонал</variant>
-					<variant>A) бизнес бастамашылары</variant>
-					<variant>A) бизнестің тең құрылтайшылары</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>95. Бизнес-жоспардың сыртқы пайдаланушылары</text>
-				<options>
-					<variant>A) несие берушілер</variant>
-					<variant>A) бизнес құрылтайшылары</variant>
-					<variant>A) персонал</variant>
-					<variant>A) бизнес бастамашылары</variant>
-					<variant>A) бизнестің тең құрылтайшылары</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>96. Бизнес-жоспардың сыртқы пайдаланушылары</text>
-				<options>
-					<variant>A) сыртқы серіктестер</variant>
-					<variant>A) бизнес құрылтайшылары</variant>
-					<variant>A) персонал</variant>
-					<variant>A) бизнес бастамашылары</variant>
-					<variant>A) бизнестің тең құрылтайшылары</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>97. Салық салудың іргелі мақсатын көрсете отырып, салықтардың негізгі функциясы-ұйымдар мен азаматтардың табыстарының бір бөлігін мемлекеттік бюджеттің пайдасына салықтар арқылы алу</text>
-				<options>
-					<variant>A) фискалдық</variant>
-					<variant>A) Тарату</variant>
-					<variant>A) Реттеуші</variant>
-					<variant>A) бақылау</variant>
-					<variant>A) тежегіш</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
+					<question>
+						<text>93. Бизнес-жоспардың ішкі пайдаланушылары</text>
+						<options>
+							<variant>A) бизнес құрылтайшылары</variant>
+							<variant>A) әлеуетті инвесторлар</variant>
+							<variant>A) несие берушілер</variant>
+							<variant>A) бизнес серіктестері</variant>
+							<variant>A) мемлекет</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>94. Бизнес-жоспардың сыртқы пайдаланушылары</text>
+						<options>
+							<variant>A) әлеуетті инвесторлар</variant>
+							<variant>A) бизнес құрылтайшылары</variant>
+							<variant>A) персонал</variant>
+							<variant>A) бизнес бастамашылары</variant>
+							<variant>A) бизнестің тең құрылтайшылары</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>95. Бизнес-жоспардың сыртқы пайдаланушылары</text>
+						<options>
+							<variant>A) несие берушілер</variant>
+							<variant>A) бизнес құрылтайшылары</variant>
+							<variant>A) персонал</variant>
+							<variant>A) бизнес бастамашылары</variant>
+							<variant>A) бизнестің тең құрылтайшылары</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>96. Бизнес-жоспардың сыртқы пайдаланушылары</text>
+						<options>
+							<variant>A) сыртқы серіктестер</variant>
+							<variant>A) бизнес құрылтайшылары</variant>
+							<variant>A) персонал</variant>
+							<variant>A) бизнес бастамашылары</variant>
+							<variant>A) бизнестің тең құрылтайшылары</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>97. Салық салудың іргелі мақсатын көрсете отырып, салықтардың негізгі функциясы-ұйымдар мен азаматтардың табыстарының бір бөлігін мемлекеттік бюджеттің пайдасына салықтар арқылы алу</text>
+						<options>
+							<variant>A) фискалдық</variant>
+							<variant>A) Тарату</variant>
+							<variant>A) Реттеуші</variant>
+							<variant>A) бақылау</variant>
+							<variant>A) тежегіш</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
 
 
-			<question>
-				<text>98. Салықтардың бұл функциясы салықтың әлеуметтік-экономикалық мәнін бөлу қатынастарының ерекше құралы ретінде білдіреді, нарықтық өзін-өзі реттеуден тыс бірқатар әлеуметтік-экономикалық міндеттерді шешуді қамтамасыз етеді</text>
-				<options>
-					<variant>A) Тарату</variant>
-					<variant>A) фискалдық</variant>
-					<variant>A) Реттеуші</variant>
-					<variant>A) бақылау</variant>
-					<variant>A) тежегіш</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>99. Салықтардың бұл функциясы экономикалық процестерге мемлекеттің араласуын күшейтуге бағытталған (құлдырауды болдырмау немесе бизнестің өсуін ынталандыру үшін)салық салу саласындағы іс-шаралар кешені арқылы көрінеді</text>
-				<options>
-					<variant>A) Реттеуші</variant>
-					<variant>A) фискалдық</variant>
-					<variant>A) Тарату</variant>
-					<variant>A) бақылау</variant>
-					<variant>A) тежегіш</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>100. Салықтардың функциясы ұйымдар мен азаматтардың Қаржы- шаруашылық қызметіне, сондай-ақ табыс көздеріне, олардың заңдылығы мен шығыстар бағыттарына мемлекеттік бақылауды қамтамасыз ету болып табылады</text>
-				<options>
-					<variant>A) бақылау</variant>
-					<variant>A) фискалдық</variant>
-					<variant>A) Тарату</variant>
-					<variant>A) Реттеуші</variant>
-					<variant>A) тежегіш</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>101. Мемлекет пен субъектінің өзара қарым-қатынасына байланысты салықтар</text>
-				<options>
-					<variant>A) тікелей және жанама</variant>
-					<variant>A) табиғи және ақшалай</variant>
-					<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
-					<variant>A) жалпымемлекеттік және жергілікті</variant>
-					<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
-			<question>
-				<text>102. Төлеу нысанына қарай салықтар мыналарға бөлінеді</text>
-				<options>
-					<variant>A) табиғи және ақшалай</variant>
-					<variant>A) тікелей және жанама</variant>
-					<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
-					<variant>A) жалпымемлекеттік және жергілікті</variant>
-					<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
-				</options>
-				<correctAnswer>0</correctAnswer>
-			</question>
+					<question>
+						<text>98. Салықтардың бұл функциясы салықтың әлеуметтік-экономикалық мәнін бөлу қатынастарының ерекше құралы ретінде білдіреді, нарықтық өзін-өзі реттеуден тыс бірқатар әлеуметтік-экономикалық міндеттерді шешуді қамтамасыз етеді</text>
+						<options>
+							<variant>A) Тарату</variant>
+							<variant>A) фискалдық</variant>
+							<variant>A) Реттеуші</variant>
+							<variant>A) бақылау</variant>
+							<variant>A) тежегіш</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>99. Салықтардың бұл функциясы экономикалық процестерге мемлекеттің араласуын күшейтуге бағытталған (құлдырауды болдырмау немесе бизнестің өсуін ынталандыру үшін)салық салу саласындағы іс-шаралар кешені арқылы көрінеді</text>
+						<options>
+							<variant>A) Реттеуші</variant>
+							<variant>A) фискалдық</variant>
+							<variant>A) Тарату</variant>
+							<variant>A) бақылау</variant>
+							<variant>A) тежегіш</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>100. Салықтардың функциясы ұйымдар мен азаматтардың Қаржы- шаруашылық қызметіне, сондай-ақ табыс көздеріне, олардың заңдылығы мен шығыстар бағыттарына мемлекеттік бақылауды қамтамасыз ету болып табылады</text>
+						<options>
+							<variant>A) бақылау</variant>
+							<variant>A) фискалдық</variant>
+							<variant>A) Тарату</variant>
+							<variant>A) Реттеуші</variant>
+							<variant>A) тежегіш</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>101. Мемлекет пен субъектінің өзара қарым-қатынасына байланысты салықтар</text>
+						<options>
+							<variant>A) тікелей және жанама</variant>
+							<variant>A) табиғи және ақшалай</variant>
+							<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
+							<variant>A) жалпымемлекеттік және жергілікті</variant>
+							<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>102. Төлеу нысанына қарай салықтар мыналарға бөлінеді</text>
+						<options>
+							<variant>A) табиғи және ақшалай</variant>
+							<variant>A) тікелей және жанама</variant>
+							<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
+							<variant>A) жалпымемлекеттік және жергілікті</variant>
+							<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
 
-	
+					<question>
+						<text>103. Субъектілер бойынша салықтар</text>
+						<options>
+							<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
+							<variant>A) табиғи және ақшалай</variant>
+							<variant>A) тікелей және жанама</variant>
+							<variant>A) жалпымемлекеттік және жергілікті</variant>
+							<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>104. Аумақтық деңгейге байланысты салықтар мыналарға бөлінеді</text>
+						<options>
+							<variant>A) жалпымемлекеттік және жергілікті</variant>
+							<variant>A) табиғи және ақшалай</variant>
+							<variant>A) тікелей және жанама</variant>
+							<variant>A) заңды тұлғалардан алынатын салықтар және жеке тұлғалардан алынатын салықтар</variant>
+							<variant>A) Жалпы маңызы бар және нысаналы салықтар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>105. Бұл билік пен тәртіпке негізделген басқарылатын жүйеге басқарушылық әсерді жүзеге асыру тәсілдері.</text>
+						<options>
+							<variant>A) әкімшілік басқару әдістері</variant>
+							<variant>A) әлеуметтік-психологиялық әдістер</variant>
+							<variant>A) экономикалық әдістер</variant>
+							<variant>A) кейсиан</variant>
+							<variant>A) американдық</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>106. Бұл психология мен әлеуметтанудың заңдылықтарын қолдануға негізделген басқарушылық әсерді жүзеге асыру тәсілдері.</text>
+						<options>
+							<variant>A) әлеуметтік-психологиялық әдістер</variant>
+							<variant>A) әкімшілік басқару әдістері</variant>
+							<variant>A) экономикалық әдістер</variant>
+							<variant>A) кейсиан</variant>
+							<variant>A) американдық</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>107. Бизнесті басқарудың бұл әдісі экономикалық заңдар мен санаттардың талаптарын саналы түрде қолдануға негізделген басқару объектісінің экономикалық мүдделеріне әсер етеді.</text>
+						<options>
+							<variant>A) экономикалық әдістер</variant>
+							<variant>A) әкімшілік басқару әдістері</variant>
+							<variant>A) әлеуметтік-психологиялық әдістер</variant>
+							<variant>A) кейсиан</variant>
+							<variant>A) американдық</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>108. бұл менеджер көптеген функцияларды бағыныштыларға беруді көздейтін бизнесті жүргізу технологиясын құратын басқару моделі.</text>
+						<options>
+							<variant>A) делегацияға негізделген басқару моделі</variant>
+							<variant>A) басқарушылық араласуды азайтуға негізделген модель</variant>
+							<variant>A) нәтижелерге негізделген Модель</variant>
+							<variant>A) ауытқуларды басқару моделі</variant>
+							<variant>A) процесс моделі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>109. Делегация ретінде басқару моделіне ұқсас, бірақ бәрі қызметкерлердің шартты «еркіндігіне» негізделген. Адамдарға шешім қабылдауға көп еркіндік беріледі, нұсқаулар мен алгоритмдер бар.</text>
+						<options>
+							<variant>A) басқарушылық араласуды азайтуға негізделген модель</variant>
+							<variant>A) делегацияға негізделген басқару моделі</variant>
+							<variant>A) нәтижелерге негізделген Модель</variant>
+							<variant>A) ауытқуларды басқару моделі</variant>
+							<variant>A) процесс моделі</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>110. Бизнесті басқарудың бұл әдісі менеджерлерге компаниядағы процестерге емес, нақты нәтижелерге назар аударуды ұсынады</text>
+						<options>
+							<variant>A) нәтижелерге негізделген Модель</variant>
+							<variant>A) делегацияға негізделген басқару моделі</variant>
+							<variant>A) басқарушылық араласуды азайтуға негізделген модель</variant>
+							<variant>A) ауытқуларды басқару моделі</variant>
+							<variant>A) процесс моделі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+							
+						
+						
+							
+					<question>
+						<text>111. Мұндай жүйедегі Менеджер тек жақсы немесе жаман жағдайларды анықтайды және талдайды, мысалы, сату немесе өндіріс жоспарларының нормадан ауытқуы</text>
+						<options>
+							<variant>A) ауытқуларды басқару моделі</variant>
+							<variant>A) делегацияға негізделген басқару моделі</variant>
+							<variant>A) басқарушылық араласуды азайтуға негізделген модель</variant>
+							<variant>A) нәтижелерге негізделген Модель</variant>
+							<variant>A) процесс моделі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>112. менеджерлер қызметкерлер түпкілікті нәтижеге қалай әсер ететінін түсінбейтін жүйені құрады.</text>
+						<options>
+							<variant>A) процесс моделі</variant>
+							<variant>A) ауытқуларды басқару моделі</variant>
+							<variant>A) делегацияға негізделген басқару моделі</variant>
+							<variant>A) басқарушылық араласуды азайтуға негізделген модель</variant>
+							<variant>A) нәтижелерге негізделген Модель</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>113. Бизнесті басқару жүйесі ұжымшылдыққа негізделген және шешім қабылдау және нәтиже үшін жауапкершілік туралы. Мұндай ұйымдардағы қызметкер өзін ұжымнан бөлек сезінбейді</text>
+						<options>
+							<variant>A) жапон моделі</variant>
+							<variant>A) американдық жүйе.</variant>
+							<variant>A) Еуропалық жүйе.</variant>
+							<variant>A) Араб моделі</variant>
+							<variant>A) отандық модель</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>114. Индивидуализмге негізделген бизнесті басқару жүйесі-топ-менеджерлер ұжымның пікірін ескермей, өздері шешім қабылдайды, бірақ олардан кіші менеджерлер де үлгі алады.</text>
+						<options>
+							<variant>A) американдық жүйе.</variant>
+							<variant>A) Еуропалық жүйе.</variant>
+							<variant>A) Араб моделі</variant>
+							<variant>A) отандық модель</variant>
+							<variant>A) жапон моделі</variant>
+						</options>
+						<correctAnswer>4</correctAnswer>
+					</question>
+					<question>
+						<text>115. Бизнесті басқарудың бұл жүйесінде кадрлық саясат пен коммуникация стиліне, құжат айналымы жүйесін құруға көп уақыт бөлінеді. Қызметкерлерден жоғары кәсібилік пен ұсақ-түйекке назар аудару талап етіледі.</text>
+						<options>
+							<variant>A) Еуропалық жүйе.</variant>
+							<variant>A) жапон моделі</variant>
+							<variant>A) американдық жүйе.</variant>
+							<variant>A) Араб моделі</variant>
+							<variant>A) отандық модель</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>116. иБизнесті басқарудың бұл жүйесінде жеке коммуникативті арналарды қолдану белсенді қолданылады, кланизм өте дамыған, атап айтқанда менеджерлер әдетте бір отбасынан немесе әлеуметтік топтан, мысалы, бір оқу орнынан таңдалады</text>
+						<options>
+							<variant>A) Араб моделі</variant>
+							<variant>A) Еуропалық жүйе.</variant>
+							<variant>A) жапон моделі</variant>
+							<variant>A) американдық жүйе.</variant>
+							<variant>A) отандық модель</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>117. ұйымды сапалы персоналмен қамтамасыз етуге бағытталған Білім және практикалық қызмет саласы…</text>
+						<options>
+							<variant>A) персоналды басқару</variant>
+							<variant>A) маркетинг</variant>
+							<variant>A) Мемлекеттік қызмет</variant>
+							<variant>A) бизнес-процестер</variant>
+							<variant>A) маркетингтік зерттеулер</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>118. Бұл бизнес және іскерлік байланыстар саласындағы белгіленген тәртіп.</text>
+						<options>
+							<variant>A) іскерлік этикет</variant>
+							<variant>A) мемлекеттік тарылту этикасы</variant>
+							<variant>A) мінез-құлық нормасы</variant>
+							<variant>A) заңнамалық акт</variant>
+							<variant>A) менеджмент және маркетинг</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>119- шағын көсіпкерлік субъектілері, еңбекшілер сана Артық болмаса</text>
+						<options>
+							<variant>A) 100</variant>
+							<variant>A) 15</variant>
+							<variant>A) 250</variant>
+							<variant>A) 500</variant>
+							<variant>A) 1500</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>120- - ҚР-сыйлықтар 1 санаттана руксат құжаты</text>
+						<options>
+							<variant>A) лицензия</variant>
+							<variant>A) құмар</variant>
+							<variant>A) руксаттар</variant>
+							<variant>A) код</variant>
+							<variant>A) патент</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					
+					<question>
+						<text>121- - ҚР-иә екінші санатты рұқсат құжаты болып табылды</text>
+						<options>
+							<variant>A) руксаттар</variant>
+							<variant>A) лицензия</variant>
+							<variant>A) құмар</variant>
+							<variant>A) код</variant>
+							<variant>A) патент</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>122- ҚР-да 3 санаттана руксат құжаты болып табылды</text>
+						<options>
+							<variant>A) құмар</variant>
+							<variant>A) лицензия</variant>
+							<variant>A) руксаттар</variant>
+							<variant>A) код</variant>
+							<variant>A) патент</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>123—төмендегілердің қайсысы кесіпкерлік қызметке он емес:</text>
+						<options>
+							<variant>A) қоғамның шығармашылық леуеті</variant>
+							<variant>A) паяда табу мақсатындағы экономиялық қызы ұлық</variant>
+							<variant>A) қызметкерлерді лайықты жалақымен қамтамасыз ету</variant>
+							<variant>A) қасіпорын манында тұратын халық үшін жұмыс Қарапайым құры</variant>
+							<variant>A) куктик нормалар шонберинде ерекет ететин шаруашылык жургизуши субъектілердің дербесті мен сүлгісіздігі.</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>124- бұл .көсіпкерлік қызметтің ерекшелігі емес:</text>
+						<options>
+							<variant>A) кесiпкерлiк-бұл кесiпорындардың ұйымдық-құқықтық нысандарының бiрi.</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+
+					<question>
+						<text>126- бұл мемілені жүзге асыр үшін қажетті шарттарды бекитетін негiзгi құжат:</text>
+						<options>
+							<variant>A) Келісімшарт</variant>
+							<variant>A) тауар сапасының сойкестік куәліктері</variant>
+							<variant>A) қызмет корсет туралы алды ала келісім</variant>
+							<variant>A) фирманың жылдық есебі</variant>
+							<variant>A) тауар бірлігін багасын жоспарлы есептеу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>127- Бизнес маркетингінің ең толық анықтамаларының бірін таңдаңыз:</text>
+						<options>
+							<variant>A) келісілген шарттарға сәйкес тауарларды жеткізу, жұмыстарды орындау немесе қызметтерді көрсету туралы екі немесе одан да көп тараптар арасындағы келісім;</variant>
+							<variant>A) екі жақтың арасында өнім өндіру.</variant>
+							<variant>A) жеке еңбек шарты</variant>
+							<variant>A) қабылданған шарттарға сәйкес қолма-қол ақшасыз жүз Екі тарап арасындағы ілу туралы келісім</variant>
+							<variant>A) Тауарларды қолма-қол ақшасыз жеткізу туралы бірнеше Тараптар арасындағы келісім.</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>128- үйымдастырушылық-басқарушылық қызметі қосибі Жүзеге асылатын адам-бул</text>
+						<options>
+							<variant>A) менеджер</variant>
+							<variant>A) акционер</variant>
+							<variant>A) жұмыс құлақтары</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>129-Бәсекелестілік бұл:</text>
+						<options>
+							<variant>A) ұзақ мерзімді шаруашылық нәтижелерін жақсарту мақсатында кәсіпорындар арасындағы өндірістік жағдайлар үшін және кәсіпорыннан тыс (жоғары қолжетімділік жағдайында) бәсекелестік заңмен қорғалатын құқық болып табылады.</variant>
+							<variant>A) тұтынушылар тобының сұранысы бойынша көпшілік Қызмет</variant>
+							<variant>A) аттестаттау кезінде белгіленген талаптарға сәйкестігін тексеру</variant>
+							<variant>A) аванстық компаниялардың банкінде Тақ үшін күрес</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+					
+					
+					
+					<question>
+						<text>130-кәсіпкерлік-бул:</text>
+						<options>
+							<variant>A) өз игіліктерін қолдана отырып, бетінше немесе жалда еңбекті тарта отырып, табыс алуды және онімді ондіру шаралары бойынша адамның ерікті қызметі</variant>
+							<variant>A) тек пайданы жақсартуға күш адам</variant>
+							<variant>A) кономикалық агенттердің шектеулі ресурстарды тиімді алу аркылы пайда мен кіріске барылған мәжбурлі қызметі</variant>
+							<variant>A) халықтын қажеттіліктерін канагаттандыру ушін байланысты қызметпен айналысатын көсіпорындар құрылу</variant>
+							<variant>A) кономикалық жуйеде косымша кун құрылу процесі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>131-көсіпкерліктін мақсаты:</text>
+						<options>
+							<variant>A) қоғамнын унемі озгеріп отыратын және осіп келе жатқан қажеттіліктерін канараттандырумен байланысты уздіксіз кобею процесін камтамасыз ету</variant>
+							<variant>A) жергілікті халықтын сұранысын канараттандыру</variant>
+							<variant>A) тауекел жағдаятында және онымды өндіру</variant>
+							<variant>A) кстенсивті ондіріс</variant>
+							<variant>A) мақсымалды пайда алу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>132- ұйымдастыру – бұл:</text>
+						<options>
+							<variant>A) ортак мақсатка жету ушін қызметі саналы турде уйлестірілетін адамдар тобы</variant>
+							<variant>A) қасіптік белгілері бойынша қызметкерлер тобы болып желі кэсіпорынның жеке құрамы</variant>
+							<variant>A) максималды пайдаға кол жеткізу жұмыс істейтін занды тула</variant>
+							<variant>A) өңдеу және рухани өнімдерді өңдеу</variant>
+							<variant>A) 03 қараматында ыларды тиімді басқару мүмкіндігі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>133- ұйымға тікелей әсер ететін сыртқы ортамен байланысты факторларды анықтаңыз:</text>
+						<options>
+							<variant>A) тұтынушылардың, көршілердің, жеткізушілердің, ұжымдардың, жергілікті заң шығарушылардың құқықтарын қорғау</variant>
+							<variant>A) тұтынушылар, жеткізушілер, жеткізушілер; ғылыми-техникалық прогресс</variant>
+							<variant>A) тұтынушылар, серіктестер, жеткізушілер, саясат, ғылыми-техникалық прогресс</variant>
+							<variant>A) тұтынушылар, бәсекелестер, жеткізушілер, саясат</variant>
+							<variant>A) тұтынушылар, бәсекелестер, жеткізушілер, саясат, халықаралық қатынастар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>134- –белгілі бір мақсатты барды бар адамды іс-эрекетке итермелейтін басқару қызметінің функциясын қалай өзгерту:</text>
+						<options>
+							<variant>A) Мотивация</variant>
+							<variant>A) басқару</variant>
+							<variant>A) ұйымдастыру</variant>
+							<variant>A) бақылау</variant>
+							<variant>A) жоспарлау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>135- келіссоздер жургізу жоне кужаттама жургізу этикасы:</text>
+						<options>
+							<variant>A) скерлік этика</variant>
+							<variant>A) қазіргі этика</variant>
+							<variant>A) отбасылық этика</variant>
+							<variant>A) стратегиялық этика</variant>
+							<variant>A) әлеуметтік этика</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>136) кәсіпкерге табыс әкелетін экономикалық, өндірістік және өзге де қызметті ұйымдастыру-бұл</text>
+						<options>
+							<variant>A) кәсіпкерлік</variant>
+							<variant>A) сатуды ынталандыру</variant>
+							<variant>A) тауарларды сатып алу</variant>
+							<variant>A) консалтинг</variant>
+							<variant>A) айналу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>137) – қандай қызмет түрі бизнес ұғымына барынша сәйкес келеді</text>
+						<options>
+							<variant>A) өнімдер мен қызметтерді шығару және сату арқылы пайда табуға бағытталған қызмет</variant>
+							<variant>A) заң шығару жұмысы</variant>
+							<variant>A) Фирманы басқару</variant>
+							<variant>A) тауарларды сертификаттау</variant>
+							<variant>A) қызметтің жаңа түрлерін игеру</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>138) – Коммерциялық кәсіпкерлік сипатталады:</text>
+						<options>
+							<variant>A) тауарларды сатып алу-сату жөніндегі мәмілелер</variant>
+							<variant>A) тауарлар өндіру</variant>
+							<variant>A) Рекрутинг Арқылы</variant>
+							<variant>A) Консалтинг Арқылы</variant>
+							<variant>A) Жылжымайтын Мүлік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>139) – кәсіпорын шағын болып саналатын жұмысшылардың максималды санына қандай фактор әсер етеді</text>
+						<options>
+							<variant>A) қызмет саласы</variant>
+							<variant>A) ұжымның жалпы жиналысының шешімі</variant>
+							<variant>A) әкімнің пікірі</variant>
+							<variant>A) өндірістің зияндылық дәрежесі</variant>
+							<variant>A) басшылықтың шешімі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>140) – үлкен бизнестің шағын бизнестен қандай артықшылықтары бар</text>
+						<options>
+							<variant>A) барлық жауап нұсқалары дұрыс</variant>
+							<variant>A) заманауи техниканы қолдану мүмкіндігі</variant>
+							<variant>A) білікті мамандарды тарту мүмкіндігі</variant>
+							<variant>A) бизнесті кеңейту мүмкіндіктері</variant>
+							<variant>A) салыстырмалы түрде төмен басқару шығындары</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>			
+					
+
+
+					<question>
+						<text>141) – кәсіпкерлік қызметтің негізгі субъектісі</text>
+						<options>
+							<variant>A) Кәсіпкер</variant>
+							<variant>A) жалдамалы қызметкер</variant>
+							<variant>A) Клиент</variant>
+							<variant>A) Мемлекет</variant>
+							<variant>A) Тұтынушы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>142) – кәсіпкерліктің негізгі нысандары</text>
+						<options>
+							<variant>A) Жеке және мемлекеттік</variant>
+							<variant>A) отандық және шетелдік</variant>
+							<variant>A) Жеке және кәсіпкерлік</variant>
+							<variant>A) Жеке және аралас</variant>
+							<variant>A) Мемлекеттік және аймақтық</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>143) - қандай да бір нақты экономикалық нысанның көрінетін сұлбасы бар өндірушінің ықтимал мүддесі деп аталады</text>
+						<options>
+							<variant>A) кәсіпкерлік идеямен</variant>
+							<variant>A) кәсіпкерлік қызметпен</variant>
+							<variant>A) кәсіпкерліктегі тәуекелдер</variant>
+							<variant>A) Ақпаратпен</variant>
+							<variant>A) кәсіпкерлік дербестігі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>144) – кәсіпкер өзіне берілген тауар үшін тұтынушыдан алуды көздейтін ақша бірліктерінің саны деп аталады</text>
+						<options>
+							<variant>A) тауардың болжамды бағасы</variant>
+							<variant>A) бағалау бағасымен</variant>
+							<variant>A) Бонус</variant>
+							<variant>A) қатты баға</variant>
+							<variant>A) тауардың жылжымалы бағасы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>145) – тауар өндіруге байланысты шығыстар деп аталады</text>
+						<options>
+							<variant>A) өндіріс шығындары</variant>
+							<variant>A) орташа шығындар</variant>
+							<variant>A) өзіндік құны</variant>
+							<variant>A) тауарды өткізу бағасымен</variant>
+							<variant>A) амортизациялық аударымдармен</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>146) – фирманың жылдық кіріс сомасының тиісті шығыстардан асып кетуі деп аталады:</text>
+						<options>
+							<variant>A) Пайда</variant>
+							<variant>A) тауардың бағасы</variant>
+							<variant>A) амортизациялық аударымдармен</variant>
+							<variant>A) өндіріс шығындары</variant>
+							<variant>A) дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					<question>
+						<text>147) – нақты жалпы кірістерінің жалпы сомасы деп аталады:</text>
+						<options>
+							<variant>A) жиынтық табыс</variant>
+							<variant>A) Пайда</variant>
+							<variant>A) тауардың бағасы</variant>
+							<variant>A) амортизациялық аударымдармен</variant>
+							<variant>A) өндіріс шығындары</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>148) – фирманың барлық кірістерінің жалпы сомасы деп аталады:</text>
+						<options>
+							<variant>A) жиынтық табыс</variant>
+							<variant>A) өндіріс шығындары</variant>
+							<variant>A) Жалпы табыс</variant>
+							<variant>A) Пайда</variant>
+							<variant>A) тауардың бағасы</variant>
+						</options>
+						<correctAnswer>2</correctAnswer>
+					</question>
+					<question>
+						<text>149) – мемлекеттік мүлікті басқаруға уәкілетті мемлекеттік басқару органдары құрған кәсіпорын атынан экономикалық белсенділікті жүзеге асыру нысаны:</text>
+						<options>
+							<variant>A) Мемлекеттік кәсіпкерлікпен</variant>
+							<variant>A) жеке кәсіпкерлікпен</variant>
+							<variant>A) жеке кәсіпкерлікпен</variant>
+							<variant>A) отбасылық кәсіпкерлік</variant>
+							<variant>A) бірлескен кәсіпкерлікпен</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>150) – жеке кәсіпкердің атынан экономикалық белсенділікті жүзеге асыру нысаны:</text>
+						<options>
+							<variant>A) жеке кәсіпкерлікпен</variant>
+							<variant>A) жергілікті бизнеспен</variant>
+							<variant>A) бірлескен кәсіпкерлікпен</variant>
+							<variant>A) халықаралық бизнеспен</variant>
+							<variant>A) Мемлекеттік кәсіпкерлікпен</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>151) – қандай нұсқа кәсіпкерліктің сипаттамасы болып табылмайды:</text>
+						<options>
+							<variant>A) жергілікті басқару органдарына тәуелділік</variant>
+							<variant>A) экономикалық тәуекел</variant>
+							<variant>A) Жауапкершілік</variant>
+							<variant>A) Тәуелсіздік және Тәуелсіздік</variant>
+							<variant>A) экономикалық қызығушылық</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>152) – кәсіпкерлік қызмет түрлеріне мыналар жатады:</text>
+						<options>
+							<variant>A) барлық жауаптар дұрыс</variant>
+							<variant>A) Өндірістік</variant>
+							<variant>A) Қаржылық</variant>
+							<variant>A) Коммерциялық</variant>
+							<variant>A) Консультативтік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>153) кәсіпкерлік қызмет түрлеріне мыналар жатады:</text>
+						<options>
+							<variant>A) барлық жауаптар дұрыс</variant>
+							<variant>A) Өндірістік</variant>
+							<variant>A) Қаржылық</variant>
+							<variant>A) Коммерциялық</variant>
+							<variant>A) Консультативтік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>154) 1-сатып алу-сату объектісі ақша, валюта және бағалы қағаздар болып табылатын кәсіпкерлік қызмет түрі:</text>
+						<options>
+							<variant>A) Қаржы кәсіпкерлігімен</variant>
+							<variant>A) Хеджирлеу</variant>
+							<variant>A) консультативтік кәсіпкерлікпен</variant>
+							<variant>A) Консалтинг Арқылы</variant>
+							<variant>A) өндірістік кәсіпкерлік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>155) қызметтің мақсаттары мен түрлері, ұйымдық-құқықтық нысаны, құрылтайшылардың толық атауы, құрамы мен аты-жөні, заңды мекен-жайы, басқару және бақылау органдары тұжырымдалатын негізгі құжат, одан кәсіпорынның мүлкі, жарғылық қордың мөлшері, қатысушылар арасында пайданы бөлу тәртібі, Кәсіпорынды тарату және қайта ұйымдастыру тәртібі деп аталады</text>
+						<options>
+							<variant>A) кәсіпорын Жарғысымен</variant>
+							<variant>A) құрылтайшылардың келісімімен</variant>
+							<variant>A) құрылтайшылар жиналысының хаттамасымен</variant>
+							<variant>A) есеп саясаты</variant>
+							<variant>A) құрылтай келісімшартымен</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>156 қандай қызмет түрі бизнес ұғымына барынша сәйкес келеді:</text>
+						<options>
+							<variant>A) белгілі бір өнімдер мен қызметтерді құру және сату арқылы пайда табуға бағытталған қызмет</variant>
+							<variant>A) заңдардың сақталуын бақылау</variant>
+							<variant>A) фирмадағы іскери әкімшілік</variant>
+							<variant>A) жеке тұлғалардың қажеттіліктерін қанағаттандыру жөніндегі қызмет</variant>
+							<variant>A) дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>157-коммерциялық кәсіпкерлік сипатталады:</text>
+						<options>
+							<variant>A) тауарлар мен қызметтерді сатып алу-сату жөніндегі мәмілелер</variant>
+							<variant>A) тауарлар мен қызметтерді өндіру</variant>
+							<variant>A) сатып алу құнын айырбастау</variant>
+							<variant>A)Кеңес Беру Арқылы</variant>
+							<variant>A) дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>158	кәсіпорын орташа болып саналатын жұмысшылардың максималды санына қандай фактор әсер етеді</text>
+						<options>
+							<variant>A) қызмет саласы</variant>
+							<variant>A) еңбек ұжымының пікірі</variant>
+							<variant>A) жергілікті билік органдарының шешімі</variant>
+							<variant>A) кәсіпорын миссиясы</variant>
+							<variant>A) басшының шешімі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>159	бұл әсіресе кәсіпкердің қызметінде қиын</text>
+						<options>
+							<variant>A) тауар өндіру</variant>
+							<variant>A) өнімнің сынақ партияларын сату</variant>
+							<variant>A) сатып алушыны табу және өнімді сату</variant>
+							<variant>A) шикізаттың жаңа көздерін іздеу</variant>
+							<variant>A) дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>160	кәсіпорынның құрылтай құжаттарының тізбесіне қандай құжат жатпайды</text>
+						<options>
+							<variant>A) мемлекеттік бажды төлеу туралы куәлік</variant>
+							<variant>A) құрылтай шарты</variant>
+							<variant>A) Кәсіпорын Жарғысы</variant>
+							<variant>A) кәсіпорын Жарғысына өзгерістер</variant>
+							<variant>A) кәсіпорын Жарғысына толықтырулар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>161бизнестегі инновация процесінің мақсаты не деп санау керек:</text>
+						<options>
+							<variant>A) барлық опциялар дұрыс</variant>
+							<variant>A) жаңа нарықтарды жаулап алу</variant>
+							<variant>A) қосымша пайда табу</variant>
+							<variant>A) фирманың имиджін нығайту</variant>
+							<variant>A) фирманың беделін арттыру</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>162ресурстарды ұтымды пайдалану жолымен қойылған мақсаттарға қол жеткізу және өндіріс тиімділігін арттыру жөніндегі қызмет</text>
+						<options>
+							<variant>A) Менеджмент</variant>
+							<variant>A) Маркетинг</variant>
+							<variant>A) Міндеттеме</variant>
+							<variant>A) кәсіби бағдар</variant>
+							<variant>A) ұйымды басқару</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>163	 құрылтайшылардың қарым-қатынасын анықтайтын кәсіпорын құру туралы шешім деп аталады:</text>
+						<options>
+							<variant>A) құрылтай шартымен</variant>
+							<variant>A) кәсіпорын Жарғысымен</variant>
+							<variant>A) құрылтайшылардың өтініші бойынша</variant>
+							<variant>A) акционерлер жиналысының хаттамасымен</variant>
+							<variant>A) есеп саясаты</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>164	 бірлескен меншікке негізделген кәсіпкерлік: А) жеке кәсіпкерлікке</text>
+						<options>
+							<variant>A) жеке кәсіпкерлікке</variant>
+							<variant>A) инновациялық кәсіпкерлікке</variant>
+							<variant>A) барлық жауаптар дұрыс</variant>
+							<variant>A) барлық жауаптар дұрыс емес</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>165	 мақсатқа жетуге бағытталған мақсаттар мен ресурстар бойынша келісілген уақыт пен кеңістікке байланысты шаралар мен әрекеттер жүйесі деп аталады:</text>
+						<options>
+							<variant>A) Бизнес-жоспар</variant>
+							<variant>A) Бизнес-идея</variant>
+							<variant>A) барлық жауаптар дұрыс</variant>
+							<variant>A) Стратегия</variant>
+							<variant>A) Тактика</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>166 өндірушілер мен жеткізушілер, кәсіпкерлер, фирмалар арасындағы өз Кәсіпкерлік қызметінің үздік нәтижелеріне қол жеткізу мақсатында өндіріс пен өткізудің неғұрлым тиімді шарттары үшін күрес деп аталады:</text>
+						<options>
+							<variant>A) Бәсекелестік</variant>
+							<variant>A) Инновация</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+							<variant>A) Стратегия</variant>
+							<variant>A) Тәуекел</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>167Обмен ценностями между партнерами или объединение усилий для достижения коммерческой выгоды, называется:</text>
+						<options>
+							<variant>A) Сделкой</variant>
+							<variant>A) Хеджированием</variant>
+							<variant>A) Риск-менеджментом</variant>
+							<variant>A) Страхованием</variant>
+							<variant>A) Выгодой</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>168 Егер мәмілеге бір елдің өкілдері қатысса, онда ол аталады: </text>
+						<options>
+							<variant>A) Сыртқы</variant>
+							<variant>A) Халықаралық</variant>
+							<variant>A) Резидент</variant>
+							<variant>A) Ішкі</variant>
+							<variant>A) Еларалық</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					<question>
+						<text>169 question 2>бір немесе бірнеше тауарлардың белгілі бір санын басқа немесе басқа тауарлардың баламалы санына айырбастау операциясы деп аталады:</text>
+						<options>
+							<variant>A) Айырбастау</variant>
+							<variant>A) қарсы жеткізу</variant>
+							<variant>A) коммерциялық мәміле</variant>
+							<variant>A) Өтеусіз</variant>
+							<variant>A)Сыйға Тарту Арқылы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>170.	Кәсіпкерлік қызметтің объектісі болып табылады</text>
+						<options>
+							<variant>A) тауар, өнім, қызмет</variant>
+							<variant>A) Кәсіпкер</variant>
+							<variant>A) бәрі дұрыс</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+					<question>
+						<text>171.	кәсіпкерлік қызметтің негізгі субъектісі:</text>
+						<options>
+							<variant>A) Кәсіпкер</variant>
+							<variant>A) жалдамалы қызметкер</variant>
+							<variant>A) сатып алу сұранысы</variant>
+							<variant>A) Мемлекет</variant>
+							<variant>A) Тұтынушы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>172.	кәсіпкер өзінің табиғи қасиеттеріне немесе сыртқы жағдайларға байланысты өндіріс факторларын талдауға және жаңа тәсілдермен біріктіруге ерекше қабілетіне байланысты алатын табыс</text>
+						<options>
+							<variant>A) кәсіпкерлік табыс</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+							<variant>A) тауарды сатудан түскен түсім</variant>
+							<variant>A) кіріс операциялары</variant>
+							<variant>A) фирманың жылдық айналымы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>173.	кәсіпкерлік қызметті тиімді деңгейде жүзеге асыру тек болған жағдайда ғана мүмкін болады</text>
+						<options>
+							<variant>A) кәсіпкерлік орта</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+							<variant>A) кәсіпкерлік тәуекел</variant>
+							<variant>A) Консалтинг</variant>
+							<variant>A) Субсидиялау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>174.	кәсіпкерліктің негізгі нысандары:</text>
+						<options>
+							<variant>A) Жеке және мемлекеттік</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+							<variant>A) Жеке және кәсіпкерлік</variant>
+							<variant>A) Жеке және нарықтық</variant>
+							<variant>A) мемлекетаралық және жеке</variant>
+						</options>
+						<correctAnswer>1</correctAnswer>
+					</question>
+
+
+					<question>
+						<text>175.	кәсіпкерлік идеяларды жинақтау болып табылады: А) Идеялар банкі</text>
+						<options>
+							<variant>A) идеяларды бағалау</variant>
+							<variant>A) идеяларды таңдау</variant>
+							<variant>A) дұрыс жауаптар жоқ</variant>
+							<variant>A) идеяларды талдау</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>176.	кәсіпкерге табыс әкелетін экономикалық, өндірістік және басқа қызметті ұйымдастыру-бұл</text>
+						<options>
+							<variant>A) нарықты игеру және өткізуді ынталандыру</variant>
+							<variant>A) жеке пайдалануға арналған тауарларды сатып алу</variant>
+							<variant>A) рекрутинг</variant>
+							<variant>А) кәсіпкерлік</variant>
+							<variant>A) жарнама</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					<question>
+						<text>177.	басқару процесінің тиімділігін не сипаттайды</text>
+						<options>
+							<variant>A) фирманың кірісі</variant>
+							<variant>A) фирма филиалдарының саны</variant>
+							<variant>A) есепті кезеңдегі жұмыстан босатылған қызметкерлердің саны</variant>
+							<variant>A) жасалған еңбек келісімшарттарының саны</variant>
+							<variant>A) жиналыстар саны</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>178.	өзіңізді және бағыныштыларыңызды мақсаттарға жету үшін әрекетке шақыру процесі:</text>
+						<options>
+							<variant>A) мотивация</variant>
+							<variant>A) бақылау</variant>
+							<variant>A) жоспарлау</variant>
+							<variant>A) реттеу</variant>
+							<variant>A) ұйым</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>180.	адамдарды алға қойған мақсаттарына жету үшін жұмыс істеуге шақыру- бұл:</text>
+						<options>
+							<variant>A) қызметкерлерді ынталандыру</variant>
+							<variant>A) мәжбүрлеу</variant>
+							<variant>A) әсер ету</variant>
+							<variant>A) пряник</variant>
+							<variant>A) қамшы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>181.	фирманың Бизнес-жоспары құжат болып табылады: А) Жоспарлы</text>
+						<options>
+							<variant>A) Нормативтік</variant>
+							<variant>A) Стратегиялық</variant>
+							<variant>A) Нақты</variant>
+							<variant>А) Жоспарлы</variant>
+							<variant>A) Директивалық</variant>
+						</options>
+						<correctAnswer>3</correctAnswer>
+					</question>
+					<question>
+						<text>182.	қызметкердің жаңа жерде табысты жұмыс істеуінің бірінші кезектегі қажеттілігі неде</text>
+						<options>
+							<variant>A) бейімделу</variant>
+							<variant>A) әділ сыйақы</variant>
+							<variant>A) мансаптық өсу перспективасы</variant>
+							<variant>A) біліктілік деңгейін арттыру</variant>
+							<variant>A) бонустар</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>183.	«ұйым» терминінің қандай мағыналары бар:</text>
+						<options>
+							<variant>A) басқару функциясы және фирма</variant>
+							<variant>A) жоспарлау және стратегия</variant>
+							<variant>A) Фирма және тактика</variant>
+							<variant>A) Бизнес және функция</variant>
+							<variant>A) Фирма және бизнес</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>184.	ресми ұйым дегеніміз не</text>
+						<options>
+							<variant>A) басшылықтың еркімен құрылған ұйым</variant>
+							<variant>A) кез келген ұйым</variant>
+							<variant>A) ұйым ішіндегі жұмыс тобы</variant>
+							<variant>A) уақытша жұмыс істейтін ұйым</variant>
+							<variant>A) жұмыс комитеті</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>185.	мотивация дегеніміз не</text>
+						<options>
+							<variant>A) іс-әрекетке шақыру процесі</variant>
+							<variant>A) ұйымның функцияларының бірі</variant>
+							<variant>A) марапаттау тәсілдерінің бірі</variant>
+							<variant>A) ұйымдағы жоспарлау процесі</variant>
+							<variant>A) сыйақы алу тәсілі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					
+					
+					
+					<question>
+						<text>186.	адамның негізгі қажеттіліктері қандай:</text>
+						<options>
+							<variant>A) Физиологиялық</variant>
+							<variant>A) Психологиялық</variant>
+							<variant>A) Материалдық</variant>
+							<variant>A) Кіріс</variant>
+							<variant>A) Әлеуметтік</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>187-	бейресми ұйым дегеніміз не:</text>
+						<options>
+							<variant>A) ресми ұйым ішіндегі өздігінен ұйымдастырылған адамдар тобы</variant>
+							<variant>A) ұйым ішінде құрылған кез келген ұйым</variant>
+							<variant>A) уақытша жұмыс істейтін ұйым</variant>
+							<variant>A) басшылықтың еркімен құрылған ұйым</variant>
+							<variant>A) ұйым ішіндегі жұмыс комитеті</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>188-	ұйымның сыртқы ортасына мыналар жатады:</text>
+						<options>
+							<variant>A) экономика</variant>
+							<variant>A) қолданылатын технология</variant>
+							<variant>A) кәсіпорынның міндеттері</variant>
+							<variant>A) персонал</variant>
+							<variant>A) құрылымы</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>189-	“мемлекет-бизнес” қатынастарының тұжырымдамасы</text>
+						<options>
+							<variant>A) мемлекеттің макроэкономикалық, құрылымдық-инвестициялық және сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>A) әлеуметтік тәртіп және қоршаған ортаны қорғау мәселелерін дәйекті шешу</variant>
+							<variant>A) жалпымемлекеттік мақсаттарға қол жеткізуге бағдарлана отырып, әлеуметтік-экономикалық дамудың индикативтік жоспарларын әзірлеу</variant>
+							<variant>A) технологиялық инвестицияларды тартуға бағдарлана отырып, мемлекеттің сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>A) дұрыс жауап жоқ</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>190-	мемлекет ауыл шаруашылығы өнімдерін сатып алуды не үшін жүзеге асырады</text>
+						<options>
+							<variant>A) ауыл шаруашылығы өнімдеріне сұранысты ынталандырады</variant>
+							<variant>A) ауыл шаруашылығы өнімдерін ұсынуды шектейді</variant>
+							<variant>A) фермерлердің табысының төмендеуіне жол бермейді</variant>
+							<variant>A) халықтың табысын қайта бөледі</variant>
+							<variant>A) ауыл шаруашылығы өнімдерінің бағасын реттемейді</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>191-	ҚР Өңірлік саясатының негізгі міндеттері</text>
+						<options>
+							<variant>A) жекелеген өңірлерді селективті мемлекеттік қолдауды экономикалық белсенділікті мемлекеттік ынталандырумен ұштастыру</variant>
+							<variant>A) тұтастай алғанда мемлекет пен оның жекелеген өңірлері мүдделерінің ұтымды үйлесуі</variant>
+							<variant>A) ҚР Өңірлік нарықтарының интеграцияланған жүйесі ретінде бірыңғай жалпы республикалық нарықтың жұмыс істеуін қамтамасыз ету</variant>
+							<variant>A) өңірлерде, әсіресе дамымаған өңірлерде экономика мен әлеуметтік саланың депрессиялық жай-күйін еңсеру</variant>
+							<variant>A) өңірлердің тұрғындарына әлеуметтік нормативтермен және кепілдіктермен қамтамасыз ету</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>192-	жаңа технологияны алғашқы коммерциялық қолдану</text>
+						<options>
+							<variant>A) Инновация</variant>
+							<variant>A) қарқынды экономикалық өсу</variant>
+							<variant>A) Жаңалық</variant>
+							<variant>A) экстенсивті экономикалық өсу</variant>
+							<variant>A) Венчур</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>193-	Инвестициялар-бұл:</text>
+						<options>
+							<variant>A) өндірістік және өндірістік емес ресурстардың барлық түрлеріне Инвестициялар</variant>
+							<variant>A) қор биржасындағы алыпсатарлық операциялардан түсетін кірістер</variant>
+							<variant>A) ағымдағы кезеңде пайдаланылмаған кірістің бөлігі</variant>
+							<variant>A) жылжымайтын мүлікке салынған қаражат</variant>
+							<variant>A) банктік шоттарда жинақталған кірістердің бір бөлігі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>					
+					
+					
+					
+					
+					<question>
+						<text>194-	қолайлы кәсіпкерлік ахуалды құру:</text>
+						<options>
+							<variant>A) Кредиттеу ставкаларын төмендету</variant>
+							<variant>A) қызметкерлердің жалақысын көтеру</variant>
+							<variant>A) шектеу фискалдық саясатын жүргізу</variant>
+							<variant>A) монополиялардың күшін күшейту</variant>
+							<variant>A) бюджет тапшылығын қысқарту</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>195-	АӨК-ні мемлекеттік реттеу қажеттілігі түсіндіріледі:</text>
+						<options>
+							<variant>A) ашөнім өндірісіндегі жоғары тәуекел дәрежесі</variant>
+							<variant>A) макро шарттармен тығыз байланыс</variant>
+							<variant>A) реттелетін инвестициялардың үлкен ағыны</variant>
+							<variant>A) аштөнімнің жоғары капитал сыйымдылығы</variant>
+							<variant>A) осы салада жеке тауарларды өндірудің мүмкіндігі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>196-	экономиканы мемлекеттік реттеу:</text>
+						<options>
+							<variant>A) нарықтық механизм шеше алмайтын міндеттерді қою және шешу арқылы елдің экономикасын нығайтуға, оны өзгермелі жағдайларға бейімдеуге қызмет етуге арналған</variant>
+							<variant>A) негізінен ұлттық қаржы капиталының экономикалық мақсаттарына қызмет етеді</variant>
+							<variant>A) ең алдымен әскери-өнеркәсіптік кешеннің мүдделеріне байланысты</variant>
+							<variant>A) тек қана бюрократиялық мемлекеттік аппараттың мүдделерінен туындады</variant>
+							<variant>A) Бұл мемлекеттік заң шығарушы органдардың әрекеттері</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>197-	мемлекеттік реттеу төмендегі міндеттерді шешеді:</text>
+						<options>
+							<variant>A) Жұмыспен қамтудың өсуі, экономикалық өсуді жеделдету, елдің экономикалық қауіпсіздігін қамтамасыз ету, кеңейтілген қоғамдық өндірісті қамтамасыз ету</variant>
+							<variant>A) экономикалық өсуді жеделдету</variant>
+							<variant>A) елдің экономикалық қауіпсіздігін қамтамасыз ету</variant>
+							<variant>A) толық жұмыспен қамтуға қол жеткізу және жұмыссыздықты жою</variant>
+							<variant>A) кеңейтілген қоғамдық өндірісті қамтамасыз ету</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>198-	мемлекеттің нарықтық экономикадағы функцияларына жатпайды:</text>
+						<options>
+							<variant>A) жеке сектор өніміне тіркелген мемлекеттік бағаларды белгілеу</variant>
+							<variant>A) бәсекелестік ортаны сақтау</variant>
+							<variant>A) заң шығару қызметі</variant>
+							<variant>A) экономиканы антициклді реттеу</variant>
+							<variant>A) кірістерді бөлу</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>199-	“мемлекет-бизнес” қатынастарының тұжырымдамасы:</text>
+						<options>
+							<variant>A) мемлекеттің макроэкономикалық, құрылымдық-инвестициялық және сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>A) жалпымемлекеттік мақсаттарға қол жеткізуге бағдарлана отырып, әлеуметтік-экономикалық дамудың жылдық жоспарларын әзірлеу</variant>
+							<variant>A) әлеуметтік тәртіп және қоршаған ортаны қорғау мәселелерін дәйекті шешу</variant>
+							<variant>A) технологиялық инвестицияларды тартуға бағдарлана отырып, мемлекеттің сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>A) кредиттік саясатты жүзеге асыру</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					<question>
+						<text>200-	жаңа заманауи технологияны қолдану-бұл</text>
+						<options>
+							<variant>A) Инновация</variant>
+							<variant>A) экстенсивті Экономикалық даму</variant>
+							<variant>A) экстенсивті экономикалық өсу</variant>
+							<variant>A) Консалтинг</variant>
+							<variant>A) Әртараптандыру</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					
+					<question>
+						<text>201-	“мемлекет-бизнес” қатынастарының тұжырымдамасы (дұрыс және толық нұсқаны көрсетіңіз)</text>
+						<options>
+							<variant>А) мемлекеттің макроэкономикалық, құрылымдық-инвестициялық және сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>А) экологиялық мәселелерді дәйекті шешу</variant>
+							<variant>А) Мемлекеттік мақсаттарға қол жеткізуге бағдарлана отырып, экономикалық дамудың орта мерзімді жоспарларын әзірлеу</variant>
+							<variant>А) мемлекеттің сыртқы экономикалық саясатты жүзеге асыруы</variant>
+							<variant>А) нарықтық кадр саясатын жүзеге асыру</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+
+					<question>
+						<text>202-	ауыл шаруашылығы өнімдерін сатып алуды жүзеге асыру арқылы мемлекет көздейтін мақсаттар:</text>
+						<options>
+							<variant>А) ауыл шаруашылығы өнімдеріне сұранысты ынталандырады</variant>
+							<variant>А) ауыл шаруашылығы өнімдерін ұсынуды ынталандырады</variant>
+							<variant>А) фермерлердің табысының төмендеуіне жол бермейді</variant>
+							<variant>А) халықтың табысын қайта бөледі</variant>
+							<variant>А) ауыл шаруашылығы өнімдерінің бағасын реттейді</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+
+					<question>
+						<text>203-	Инвестициялар-бұл</text>
+						<options>
+							<variant>A)	негізгі капиталға инвестициялар</variant>
+							<variant>A)	тауар биржасындағы алыпсатарлық операциялардан түсетін кірістер</variant>
+							<variant>A)	ағымдағы кезеңде пайдаланылмаған фирма табысының бөлігі</variant>
+							<variant>A)	жылжымайтын мүлікке салынған қаражат</variant>
+							<variant>A)	банктік шоттарда жинақталған кірістердің бір бөлігі</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+
+					<question>
+						<text>204-	Кәсіпкерлік ұйымдағы қақтығыстардың ықтимал салдары:</text>
+						<options>
+							<variant>A)	бәрі дұрыс</variant>
+							<variant>A)	орындалатын жұмысқа қанағаттанбау</variant>
+							<variant>A)	әріптестер арасындағы қарым-қатынастағы негативтілікті күшейту</variant>
+							<variant>A)	жұмыс тобына деген сүйіспеншіліктің артуы</variant>
+							<variant>A)	қарама-қайшы Тараптар арасындағы байланысты қысқарту</variant>
+						</options>
+						<correctAnswer>0</correctAnswer>
+					</question>
+					
+					
+					
+					
+				</questions>
+
+
+			`;
+
+		// Преобразование строки XML в объект DOM
+		const parser = new DOMParser();
+		const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+		// Получение списка всех вопросов
+		const allQuestions = Array.from(xmlDoc.querySelectorAll('question'));
+
+		// Выбор случайных 3 вопросов
+		const randomQuestions = [];
+		while (randomQuestions.length < 3 && allQuestions.length > 0) {
+			const randomIndex = Math.floor(Math.random() * allQuestions.length);
+			randomQuestions.push(allQuestions.splice(randomIndex, 1)[0]);
+		}
+
+		// Отображение случайных вопросов на странице
+		const quizContainer = document.getElementById('quiz-container');
+		randomQuestions.forEach((question, index) => {
+			const questionText = question.querySelector('text').textContent;
+			let options = Array.from(question.querySelectorAll('variant')).map(option => option.textContent);
+			const correctAnswerIndex = parseInt(question.querySelector('correctAnswer').textContent);
+
+			// Сохраняем правильный ответ
+			const rightAnswer = options[correctAnswerIndex];
+
+			// Перемешивание вариантов ответа
+			shuffleArray(options);
+
+			// Создание HTML-элементов для вопроса
+			const questionElement = document.createElement('div');
+			questionElement.innerHTML = `
+				<p>${questionText}</p>
+				<ul>
+					${options.map((option, i) => `<li><input type="radio" name="q${index}" value="${i}">${option}</li>`).join('')}
+				</ul>
+				<div id="result${index}"></div>
+			`;
+
+			// Добавление вопроса на страницу
+			quizContainer.appendChild(questionElement);	
 			
-			
-			
-			
-			
-			
-			
-			
-		</questions>
+			// Добавление кнопки для проверки ответа
+			const submitButton = document.createElement('button');
+			submitButton.textContent = 'Проверить ответ';
+			submitButton.addEventListener('click', function () {
+				const selectedAnswer = document.querySelector(`input[name="q${index}"]:checked`);
+				const resultElement = document.getElementById(`result${index}`);
 
+				if (selectedAnswer) {
+					const selectedAnswerIndex = parseInt(selectedAnswer.value);
+					const selectedAnswerText = options[selectedAnswerIndex];
 
-    `;
+					if (selectedAnswerText === rightAnswer) {
+						resultElement.textContent = 'Правильно';
+						resultElement.className = 'correct';
+						// Увеличиваем значение переменной при правильном ответе
+						globalScore += 0;
+					} else {
+						resultElement.textContent = 'Неправильно';
+						resultElement.className = 'incorrect';
+						// Уменьшаем значение переменной при неправильном ответе
+						globalScore -= 1;
 
-    // Преобразование строки XML в объект DOM
-    const parser = new DOMParser();
-    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
-
-    // Получение списка всех вопросов
-    const allQuestions = Array.from(xmlDoc.querySelectorAll('question'));
-
-    // Выбор случайных 3 вопросов
-    const randomQuestions = [];
-    while (randomQuestions.length < 3 && allQuestions.length > 0) {
-        const randomIndex = Math.floor(Math.random() * allQuestions.length);
-        randomQuestions.push(allQuestions.splice(randomIndex, 1)[0]);
-    }
-
-    // Отображение случайных вопросов на странице
-    const quizContainer = document.getElementById('quiz-container');
-    randomQuestions.forEach((question, index) => {
-        const questionText = question.querySelector('text').textContent;
-        let options = Array.from(question.querySelectorAll('variant')).map(option => option.textContent);
-        const correctAnswerIndex = parseInt(question.querySelector('correctAnswer').textContent);
-
-        // Сохраняем правильный ответ
-        const rightAnswer = options[correctAnswerIndex];
-
-        // Перемешивание вариантов ответа
-        shuffleArray(options);
-
-        // Создание HTML-элементов для вопроса
-        const questionElement = document.createElement('div');
-        questionElement.innerHTML = `
-            <p>${questionText}</p>
-            <ul>
-                ${options.map((option, i) => `<li><input type="radio" name="q${index}" value="${i}">${option}</li>`).join('')}
-            </ul>
-            <div id="result${index}"></div>
-        `;
-
-        // Добавление вопроса на страницу
-        quizContainer.appendChild(questionElement);	
-		
-		// Добавление кнопки для проверки ответа
-		const submitButton = document.createElement('button');
-		submitButton.textContent = 'Проверить ответ';
-		submitButton.addEventListener('click', function () {
-			const selectedAnswer = document.querySelector(`input[name="q${index}"]:checked`);
-			const resultElement = document.getElementById(`result${index}`);
-
-			if (selectedAnswer) {
-				const selectedAnswerIndex = parseInt(selectedAnswer.value);
-				const selectedAnswerText = options[selectedAnswerIndex];
-
-				if (selectedAnswerText === rightAnswer) {
-					resultElement.textContent = 'Правильно';
-					resultElement.className = 'correct';
-					// Увеличиваем значение переменной при правильном ответе
-					globalScore += 0;
+						// Подсветка выбранного и правильного ответов
+						document.querySelectorAll(`input[name="q${index}"]`).forEach((input, i) => {
+							if (options[i] === rightAnswer) {
+								input.parentElement.style.color = 'green'; // Правильный ответ - зеленый
+							}
+							if (i === selectedAnswerIndex) {
+								input.parentElement.style.color = 'red'; // Неправильный ответ - красный
+							}
+						});
+					}
 				} else {
-					resultElement.textContent = 'Неправильно';
+					resultElement.textContent = 'Не выбран ответ';
 					resultElement.className = 'incorrect';
-					// Уменьшаем значение переменной при неправильном ответе
+					// Уменьшаем значение переменной при отсутствии выбора
 					globalScore -= 1;
-
-					// Подсветка выбранного и правильного ответов
-					document.querySelectorAll(`input[name="q${index}"]`).forEach((input, i) => {
-						if (options[i] === rightAnswer) {
-							input.parentElement.style.color = 'green'; // Правильный ответ - зеленый
-						}
-						if (i === selectedAnswerIndex) {
-							input.parentElement.style.color = 'red'; // Неправильный ответ - красный
-						}
-					});
 				}
-			} else {
-				resultElement.textContent = 'Не выбран ответ';
-				resultElement.className = 'incorrect';
-				// Уменьшаем значение переменной при отсутствии выбора
-				globalScore -= 1;
-			}
 
-			// Выводим текущее значение переменной в консоль
-			console.log('Правилных ответов:', globalScore, 'из 3');
+				// Выводим текущее значение переменной в консоль
+				console.log('Правилных ответов:', globalScore, 'из 3');
+			});
+
+			// Добавление кнопки для проверки ответа
+			submitButton.style.display = 'none';
+			quizContainer.appendChild(submitButton);
 		});
-
-		// Добавление кнопки для проверки ответа
-		submitButton.style.display = 'none';
-		quizContainer.appendChild(submitButton);
-    });
-	function displayGlobalScore() {
-		alert('Текущий счет: ' + globalScore + 'из 3');
-	};
-	const butButton = document.getElementById('but');
-	butButton.addEventListener('click', function () {
-		// Вызываем функцию displayGlobalScore при клике на кнопку "but"
-		displayGlobalScore();
-		butButton.disabled = true;
-	});
-	document.getElementById('pressAllButtons').addEventListener('click', function() {
-		// Находим все кнопки на странице
-		var buttons = document.querySelectorAll('button');
-
-		// Проходим по всем найденным кнопкам и эмулируем их нажатие
-		buttons.forEach(function(button) {
-			// Проверяем, не является ли текущая кнопка кнопкой 'pressAllButtons'
-			if (button !== document.getElementById('pressAllButtons')) {
-				button.click();
-			}
+		function displayGlobalScore() {
+			alert('Текущий счет: ' + globalScore + 'из 3');
+		};
+		const butButton = document.getElementById('but');
+		butButton.addEventListener('click', function () {
+			// Вызываем функцию displayGlobalScore при клике на кнопку "but"
+			displayGlobalScore();
+			butButton.disabled = true;
 		});
-  });
-</script>
+		document.getElementById('pressAllButtons').addEventListener('click', function() {
+			// Находим все кнопки на странице
+			var buttons = document.querySelectorAll('button');
 
-</body>
+			// Проходим по всем найденным кнопкам и эмулируем их нажатие
+			buttons.forEach(function(button) {
+				// Проверяем, не является ли текущая кнопка кнопкой 'pressAllButtons'
+				if (button !== document.getElementById('pressAllButtons')) {
+					button.click();
+				}
+			});
+	  });
+	</script>
+
+	</body>
 </html>
