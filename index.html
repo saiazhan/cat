@@ -1,0 +1,362 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Тест</title>
+    <style>
+        #quiz-container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .correct {
+            color: green;
+            font-weight: bold;
+        }
+
+        .incorrect {
+            color: red;
+            font-weight: bold;
+        }
+		button {
+            background-color: #4caf50;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+		#pressAllButtons {
+			margin: 0 auto;
+			display: block;
+		}
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container"></div>
+<div id="results"></div>
+<button id="pressAllButtons">Проверить</button>
+<button id ="but" style="display: none;">but</button>
+
+<script>
+	let globalScore = 3;
+    // Функция для перемешивания массива
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
+
+    // Ваш XML-файл с вопросами
+    const xmlString = `
+		<questions>
+			<question>
+				<text>Сатушылар тауарлар мен қызметтерді ұсынатын және тұтынушылар оларды сатып алатын белгілі бір экономикалық кеңістікті білдіреді. </text>
+				<options>
+					<variant>маркетингтік зерттеулер</variant>
+					<variant>фьючерстік нарық</variant>
+					<variant>Сауда және өткізу нарығы</variant>
+					<variant>тауар нарығы</variant>
+					<variant>дүниежүзілік нарық</variant>
+				</options>
+				<correctAnswer>3</correctAnswer>
+			</question>
+
+			<question>
+				<text>Өткізу нарығы, әдетте, белгілі бір мерзімде қалыптасады және дамиды…</text>
+				<options>
+					
+					<variant>сату аймағы</variant>
+					<variant>сегмент</variant>
+					<variant>Тауар нарығы</variant>
+					<variant>шектеулі адамдар шеңбері</variant>
+					<variant>дұрыс жауап жоқ</variant>
+				</options>
+				<correctAnswer>2</correctAnswer>
+			</question>
+
+			<question>
+				<text>Нарықты талдау мыналарды қамтиды:</text>
+				<options>
+					<variant>нарықтың және оның мақсатты сегменттерінің жалпы сипаттамасы, нарық сыйымдылығы мен үлесін бағалау, өткізу көлемдерін болжау, бәсекелестерді бағалау</variant>
+					<variant>нарықтың және оның мақсатты сегменттерінің, бәсекелестерінің жалпы сипаттамасы</variant>
+					<variant>нарық сыйымдылығы мен үлесін бағалау, SWOT талдауын құрастыру</variant>
+					<variant>бәсекелестерді бағалау, сату көлемін болжау</variant>
+					<variant>дүниежүзілік нарықты сегменттеу</variant>
+				</options>
+				<correctAnswer>0</correctAnswer>
+			</question>
+
+			<question>
+				<text>Өнім түріне және оған сұранысты анықтайтын қажеттілік сипатына байланысты өткізу нарығы келесідей бола алмайды: </text>
+				<options>
+					<variant>ғаламдық</variant>
+					<variant>Тұтынушы</variant>
+					<variant>Кәсіпорындар</variant>
+					<variant>Мемлекеттік органдар</variant>
+					<variant>Аралық сатушылар</variant>
+				</options>
+				<correctAnswer>1</correctAnswer>
+			</question>
+
+			<question>
+				<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі</text>
+				<options>
+					
+					<variant>нарық сегменті</variant>
+					<variant>нарықтағы бәсекелестер</variant>
+					<variant>нарықтық контрагенттер</variant>
+					<variant>Мемлекеттік органдар</variant>
+					<variant>нарық сыйымдылығы</variant>
+				</options>
+				<correctAnswer>4</correctAnswer>
+			</question>
+			    <!-- Добавьте аналогичные блоки для остальных вопросов -->
+			<question>
+				<text>белгілі бір мерзімде белгілі бір нарықта сатуға болатын тауарлар мен қызметтердің көлемі.</text>
+				<options>
+					<variant>нарықтағы бәсекелестер</variant>
+					<variant>нарық сегменті</variant>
+					<variant>нарық сыйымдылығы</variant>
+					<variant>нарықтық контрагенттер</variant>
+					<variant>Мемлекеттік органдар</variant>
+				</options>
+				<correctAnswer>2</correctAnswer>
+			</question>
+			<question>
+				<text>Өткізу нарығының сыйымдылығы осы көрсеткішке байланысты және өзгермелі шама болып табылады:</text>
+				<options>
+					<variant>мемлекеттік саясат</variant>
+					<variant>Жергілікті заңдар мен ережелер</variant>
+					<variant>нарықтық жағдай </variant>
+					<variant>Cұраныс пен ұсыныс</variant>
+					<variant>Экономикалық өсу</variant>
+				</options>
+				<correctAnswer>3</correctAnswer>
+			</question>
+    <!-- Добавьте аналогичные блоки для остальных вопросов -->
+			<question>
+				<text>Нарық жағдайы жақсарса, яғни сұраныс өссе не болады</text>
+				<options>
+					<variant>Салық ставкалары өсуде</variant>
+					<variant>Жергілікті заңдар мен ережелер</variant>
+					<variant>несиелердің көлемі қысқарады</variant>
+					<variant>нарық сыйымдылығы артады</variant>
+					<variant>нарық сыйымдылығы төмендейді</variant>
+				</options>
+				<correctAnswer>3</correctAnswer>
+			</question>
+    <!-- Добавьте аналогичные блоки для остальных вопросов -->
+			<question>
+				<text>Нарық конъюнктурасы төмендегенде, яғни сұраныс төмендегенде не болады,</text>
+				<options>
+					<variant>Халықтың әл-ауқатының өсуі</variant>
+					<variant>Нақты нарық сыйымдылығы артады</variant>
+					<variant>Нақты нарық сыйымдылығы төмендеу</variant>
+					<variant>Салық ставкалары өсуде</variant>
+					<variant>Несие көлемі қысқарады</variant>
+				</options>
+				<correctAnswer>2</correctAnswer>
+			</question>
+			<question>
+				<text>маркетингтік шешімдер қабылдаумен байланысты белгісіздікті азайту мақсатында деректерді жүйелі және объективті анықтау, жинау, өңдеу, талдау және түсіндіру</text>
+				<options>			
+					<variant>Тиімділікті есептеу</variant>
+					<variant>Бизнес-жоспарлау</variant>
+					<variant>Нарық зерттеу</variant>
+					<variant>Нарық сыйымдылығын есептеу</variant>
+					<variant>Баға саясаты</variant>
+				</options>
+				<correctAnswer>2</correctAnswer>
+			</question>
+			<question>
+				<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
+				<options>			
+					<variant>Объективтілік</variant>
+					<variant>Мәліметтерді жинау</variant>
+					<variant>Уақтылылық</variant>
+					<variant>Жүйелі</variant>
+					<variant>Реттілік</variant>
+				</options>
+				<correctAnswer>3</correctAnswer>
+			</question>
+			<!-- delitel -->
+			<question>
+				<text>маркетингтік зерттеу процедураларының жүйелілігі, әдіснамалық негізділігі, максималды жоспарлау маркетингтік зерттеудің принципі ретінде:</text>
+				<options>			
+					<variant>Объективтілік</variant>
+					<variant>Мәліметтерді жинау</variant>
+					<variant>Уақтылылық</variant>
+					<variant>Жүйелі</variant>
+					<variant>Реттілік</variant>
+				</options>
+				<correctAnswer>3</correctAnswer>
+			</question>
+			<!-- delitel -->
+			<question>
+				<text>істің шынайы жағдайын көрсететін неғұрлым нақты ақпарат беру, зерттеушінің бейтараптығы маркетингтік зерттеулердің принципі болып табылады:</text>
+				<options>			
+					<variant>Жүйелі</variant>
+					<variant>Уақтылылық</variant>
+					<variant>Реттілік</variant>
+					<variant>Мәліметтерді жинау</variant>
+					<variant>Объективтілік</variant>
+				</options>
+				<correctAnswer>4</correctAnswer>
+			</question>
+			<question>
+				<text>52. бұрыннан белгілі кәсіпорынның сауда маркасы мен технологиясын пайдалану</text>
+				<options>
+					<variant>А) Франчайзинг</variant>
+					<variant>А) франко</variant>
+					<variant>А) факторинг</variant>
+					<variant>А) форфейтинг</variant>
+					<variant>А) форвардтық мәмілелер</variant>
+				</options>
+				<correctAnswer>0</correctAnswer>
+			</question>
+			<question>
+				<text>53. »Идеяның пайда болу» түрлерінің біріне не кірмейді </text>
+				<options>
+					<variant>А) Мемлекеттік бұйрық</variant>
+					<variant>А) «стиринг» идеясы</variant>
+					<variant>А) армандар</variant>
+					<variant>А) жеке таланттар</variant>
+					<variant>А) нарық мәселелері</variant>
+				</options>
+				<correctAnswer>0</correctAnswer>
+			</question>
+			<question>
+				<text>54. «Кірпі тұжырымдамасы» әдісін қолдану арқылы бизнес-идея құру</text>
+				<options>
+					<variant>А) Сіз жақсы жұмыс істейтін және жақсы төлейтін нәрсемен үйлескенді ұнатасыз</variant>
+					<variant>А) жаңа технологиялар мен қолданыстағы салаларды қолдану</variant>
+					<variant>А) проблемаларды шешу ағашын құру</variant>
+					<variant>А) сіздің бәсекелестеріңіздің жақсы идеясын көшіру</variant>
+					<variant>А) хоббиіңізді бизнес идея ретінде қолданыңыз</variant>
+				</options>
+				<correctAnswer>0</correctAnswer>
+			</question>
+		</questions>
+
+
+    `;
+
+    // Преобразование строки XML в объект DOM
+    const parser = new DOMParser();
+    const xmlDoc = parser.parseFromString(xmlString, "text/xml");
+
+    // Получение списка всех вопросов
+    const allQuestions = Array.from(xmlDoc.querySelectorAll('question'));
+
+    // Выбор случайных 3 вопросов
+    const randomQuestions = [];
+    while (randomQuestions.length < 3 && allQuestions.length > 0) {
+        const randomIndex = Math.floor(Math.random() * allQuestions.length);
+        randomQuestions.push(allQuestions.splice(randomIndex, 1)[0]);
+    }
+
+    // Отображение случайных вопросов на странице
+    const quizContainer = document.getElementById('quiz-container');
+    randomQuestions.forEach((question, index) => {
+        const questionText = question.querySelector('text').textContent;
+        let options = Array.from(question.querySelectorAll('variant')).map(option => option.textContent);
+        const correctAnswerIndex = parseInt(question.querySelector('correctAnswer').textContent);
+
+        // Сохраняем правильный ответ
+        const rightAnswer = options[correctAnswerIndex];
+
+        // Перемешивание вариантов ответа
+        shuffleArray(options);
+
+        // Создание HTML-элементов для вопроса
+        const questionElement = document.createElement('div');
+        questionElement.innerHTML = `
+            <p>${questionText}</p>
+            <ul>
+                ${options.map((option, i) => `<li><input type="radio" name="q${index}" value="${i}">${option}</li>`).join('')}
+            </ul>
+            <div id="result${index}"></div>
+        `;
+
+        // Добавление вопроса на страницу
+        quizContainer.appendChild(questionElement);	
+		
+		// Добавление кнопки для проверки ответа
+		const submitButton = document.createElement('button');
+		submitButton.textContent = 'Проверить ответ';
+		submitButton.addEventListener('click', function () {
+			const selectedAnswer = document.querySelector(`input[name="q${index}"]:checked`);
+			const resultElement = document.getElementById(`result${index}`);
+
+			if (selectedAnswer) {
+				const selectedAnswerIndex = parseInt(selectedAnswer.value);
+				const selectedAnswerText = options[selectedAnswerIndex];
+
+				if (selectedAnswerText === rightAnswer) {
+					resultElement.textContent = 'Правильно';
+					resultElement.className = 'correct';
+					// Увеличиваем значение переменной при правильном ответе
+					globalScore += 0;
+				} else {
+					resultElement.textContent = 'Неправильно';
+					resultElement.className = 'incorrect';
+					// Уменьшаем значение переменной при неправильном ответе
+					globalScore -= 1;
+
+					// Подсветка выбранного и правильного ответов
+					document.querySelectorAll(`input[name="q${index}"]`).forEach((input, i) => {
+						if (options[i] === rightAnswer) {
+							input.parentElement.style.color = 'green'; // Правильный ответ - зеленый
+						}
+						if (i === selectedAnswerIndex) {
+							input.parentElement.style.color = 'red'; // Неправильный ответ - красный
+						}
+					});
+				}
+			} else {
+				resultElement.textContent = 'Не выбран ответ';
+				resultElement.className = 'incorrect';
+				// Уменьшаем значение переменной при отсутствии выбора
+				globalScore -= 1;
+			}
+
+			// Выводим текущее значение переменной в консоль
+			console.log('Правилных ответов:', globalScore, 'из 3');
+		});
+
+		// Добавление кнопки для проверки ответа
+		submitButton.style.display = 'none';
+		quizContainer.appendChild(submitButton);
+    });
+	function displayGlobalScore() {
+		alert('Текущий счет: ' + globalScore + 'из 3');
+	};
+	const butButton = document.getElementById('but');
+	butButton.addEventListener('click', function () {
+		// Вызываем функцию displayGlobalScore при клике на кнопку "but"
+		displayGlobalScore();
+		butButton.disabled = true;
+	});
+	document.getElementById('pressAllButtons').addEventListener('click', function() {
+		// Находим все кнопки на странице
+		var buttons = document.querySelectorAll('button');
+
+		// Проходим по всем найденным кнопкам и эмулируем их нажатие
+		buttons.forEach(function(button) {
+			// Проверяем, не является ли текущая кнопка кнопкой 'pressAllButtons'
+			if (button !== document.getElementById('pressAllButtons')) {
+				button.click();
+			}
+		});
+  });
+</script>
+
+</body>
+</html>
