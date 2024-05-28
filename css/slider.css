@@ -1,0 +1,132 @@
+.custom-item {
+  border-top: 30px solid var(--bs-secondary) !important;
+  background: rgba(239, 239, 241, 0.8);
+}
+
+.custom-content::before {
+  height: 200px;
+  display: block;
+  content: "";
+  position: relative;
+  top: -101px;
+  clip-path: polygon(50% 50%, 100% 50%, 50% 100%, 0% 50%);
+  padding: 60px;
+  opacity: 1;
+}
+
+.custom-img-icon {
+  position: relative;
+  margin-top: -230px;
+  padding: 30px;
+  padding-bottom: 0;
+}
+
+.custom-img {
+  border: 15px solid var(--bs-white);
+}
+
+.custom-img img {
+  border: 10px solid var(--bs-secondary);
+  transition: .5s;
+}
+
+.custom-item:hover h4 {
+  color: var(--bs-primary);
+  transition: .5s;
+}
+
+.custom-item:hover .custom-img img {
+  transform: scale(1.05);
+  border: 10px solid var(--bs-secondary);
+}
+
+.custom-icon .btn {
+  border-radius: 50%;  /* Используйте border-radius для округления иконок */
+}
+
+.custom-item:hover .custom-icon .btn {
+  background: var(--bs-primary);
+  color: var(--bs-white);
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px; /* Приподнимаем таблицу на 10px от верха */
+}
+
+.custom-table td {
+  border: 1px solid #dddddd;
+  padding: 8px;
+  text-align: left;
+}
+
+.custom-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.custom-rounded.custom-item {
+  height: 590px; /* Установите желаемую высоту здесь */
+  overflow: hidden; /* По желанию: скрыть содержимое, если необходимо */
+}
+
+
+/* Остальные стили без изменений */
+
+/* Button*/
+.frame {
+  text-align: center;
+  margin: 20px;
+}
+button {
+  margin: 20px;
+}
+.custom-btn {
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 25px;
+  font-family: 'Lato', sans-serif;
+  font-weight: 500;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: inline-block;
+   box-shadow:inset 2px 2px 2px 0px rgba(255,255,255,.5),
+   7px 7px 20px 0px rgba(0,0,0,.1),
+   4px 4px 5px 0px rgba(0,0,0,.1);
+  outline: none;
+}
+.btn-16 {
+  border: none;
+  color: #000;
+}
+.btn-16:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  left: 0;
+  direction: rtl;
+  z-index: -1;
+  box-shadow:
+   -7px -7px 20px 0px #fff9,
+   -4px -4px 5px 0px #fff9,
+   7px 7px 20px 0px #0002,
+   4px 4px 5px 0px #0001;
+  transition: all 0.3s ease;
+}
+.btn-16:hover {
+  color: #000;
+}
+.btn-16:hover:after {
+  left: auto;
+  right: 0;
+  width: 100%;
+}
+.btn-16:active {
+  top: 2px;
+}
